@@ -1,0 +1,50 @@
+{
+  "name": "@do-while-for-each/path-resolver",
+  "description": "Looks for a route by pathname in a predefined route tree",
+  "version": "2.0.4",
+  "main": "dist/cjs/index.js",
+  "types": "dist/types/index.d.ts",
+  "homepage": "https://github.com/dwfe/path-resolver",
+  "bugs": "https://github.com/dwfe/path-resolver/issues",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:dwfe/path-resolver.git"
+  },
+  "keywords": [
+    "path resolver",
+    "path",
+    "pathname",
+    "search",
+    "tree",
+    "route"
+  ],
+  "author": "Do|While|For|Each",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "clean": "dwfeFs cleanDir . --noConfirm --fileNames=\"dist;node_modules;package-lock.json\"",
+    "build": "dwfeFs rmForce dist --noConfirm && tsc -b src/tsconfig.json",
+    "types": "tsc -b config/tsconfig.types.json",
+    "test": "jest --config=src/__tests__/jest.config.js",
+    "version": "npm run build && npm run types && npm run test",
+    "postversion": "git push",
+    "deploy": "npm version patch && npm publish"
+  },
+  "dependencies": {
+    "path-to-regexp": "^6.2.0"
+  },
+  "devDependencies": {
+    "@do-while-for-each/tsconfig": "^1.0.3",
+    "@types/jest": "^27.4.0",
+    "jest": "^27.5.1",
+    "ts-jest": "^27.1.3",
+    "history": "5.0.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
