@@ -6,12 +6,8 @@ export interface IPathResolveResult {
   parentRoute?: IRoute;
 }
 
-export interface IPathResolverOptions {
+export interface IPathResolverOpt {
   isDebug?: boolean;
-}
-
-export const defaultOptions: IPathResolverOptions = {
-  isDebug: false,
 }
 
 export type TPathParams = { [key: string]: string; }

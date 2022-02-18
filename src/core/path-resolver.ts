@@ -1,5 +1,5 @@
 import {compile, match as matcher, MatchResult} from 'path-to-regexp'
-import {defaultOptions, IActionResult, IPathResolveResult, IRoute, TPathParams} from './contract'
+import {IActionResult, IPathResolveResult, IPathResolverOpt, IRoute, TPathParams} from './contract'
 import {Check} from './check'
 import {Clone} from './clone'
 import {Init} from './init'
@@ -8,7 +8,7 @@ export class PathResolver {
   routes: IRoute[] = []
 
   constructor(routes: IRoute[],
-              public options = defaultOptions) {
+              public opt: IPathResolverOpt = {isDebug: false}) {
     this.routes = routes.map(route => Init.route(route, '/'))
   }
 
@@ -68,7 +68,7 @@ export class PathResolver {
   }
 
   private log(path: string) {
-    if (this.options.isDebug)
+    if (this.opt.isDebug)
       console.log(' ', path)
   }
 
