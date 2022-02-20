@@ -39,6 +39,7 @@
   },
   "devDependencies": {
     "@do-while-for-each/tsconfig": "^1.0.3",
+    "@do-while-for-each/common": "^1.2.4",
     "@types/jest": "^27.4.0",
     "jest": "^27.5.1",
     "ts-jest": "^27.1.3",

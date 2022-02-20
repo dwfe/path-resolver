@@ -1,13 +1,14 @@
+import {PathResolver} from '../../core/path-resolver'
 import {routesCheck} from '../routes/routes.check'
 import {routes} from '../routes/routes'
+import {IRouteTest} from './contract'
 import {routesFlat} from './common'
-import {IRoute, PathResolver} from '../../..'
 
 export const initFlat = (): {
   pathResolver: PathResolver;
-  flatRoutes: IRoute[];
-  flatPathResolverRoutes: IRoute[];
-  flatRoutesCheck: IRoute[];
+  flatRoutes: IRouteTest[];
+  flatPathResolverRoutes: IRouteTest[];
+  flatRoutesCheck: IRouteTest[];
 } => {
   const pathResolver = new PathResolver(routes)
   const flatRoutes = routesFlat(routes, true)

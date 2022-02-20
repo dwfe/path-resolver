@@ -1,14 +1,14 @@
 import {expect} from '@jest/globals'
 import {routesTotalCount} from '../routes/routes'
-import {IRoute} from '../../..'
+import {IRouteTest} from './contract'
 
-export const routesFlat = (routes: IRoute[], deleteChildren: boolean, parentRoute: any = null, res: IRoute[] = []): IRoute[] => {
+export const routesFlat = (routes: IRouteTest[], deleteChildren: boolean, parentRoute: any = null, res: IRouteTest[] = []): IRouteTest[] => {
   for (let i = 0; i < routes.length; i++) {
     let route = routes[i]
     if (deleteChildren) {
       route = {...routes[i]}
       route.customTo = route.customTo ? {...route.customTo} : route.customTo
-      route['parentRoute'] = parentRoute
+      route.parentRoute = parentRoute
     }
     res.push(route)
     if (route.children) {
@@ -20,14 +20,14 @@ export const routesFlat = (routes: IRoute[], deleteChildren: boolean, parentRout
   return res
 }
 
-export const removeChildren = (routes: IRoute[]) =>
+export const removeChildren = (routes: IRouteTest[]) =>
   routes.forEach(r => {
     if (r.children)
       delete r.children
   })
 ;
 
-export const traverse = (routes: IRoute[] | undefined, fn) => {
+export const traverse = (routes: IRouteTest[] | undefined, fn: any) => {
   if (!routes)
     return;
 
@@ -41,7 +41,7 @@ export const traverse = (routes: IRoute[] | undefined, fn) => {
 export class Traverse {
   private totalCount = -1
 
-  run(routes: IRoute[] | undefined, fn) {
+  run(routes: IRouteTest[] | undefined, fn: any) {
     if (!routes)
       return;
 
@@ -54,7 +54,7 @@ export class Traverse {
   }
 }
 
-export const lengthCheck = (flatRoutes, flatPathResolverRoutes, flatRoutesCheck) => {
+export const lengthCheck = (flatRoutes: IRouteTest[], flatPathResolverRoutes: IRouteTest[], flatRoutesCheck: IRouteTest[]) => {
   expect(flatRoutes.length).toEqual(routesTotalCount)
   expect(flatPathResolverRoutes.length).toEqual(routesTotalCount)
   expect(flatRoutesCheck.length).toEqual(routesTotalCount)

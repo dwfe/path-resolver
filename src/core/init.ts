@@ -23,7 +23,7 @@ export class Init {
     }
   }
 
-  static to(to: string, parentPath: string): string | undefined {
+  static to(to: string | undefined, parentPath: string): string | undefined {
     if (typeof to === 'string') {
       if (to === '')
         return parentPath
@@ -36,7 +36,7 @@ export class Init {
     }
   }
 
-  static customTo(to: ICustomTo | undefined, parentPath): ICustomTo | undefined {
+  static customTo(to: ICustomTo | undefined, parentPath: string): ICustomTo | undefined {
     if (to) {
       to.pathname = Init.to(to.pathname, parentPath) as string
       return to

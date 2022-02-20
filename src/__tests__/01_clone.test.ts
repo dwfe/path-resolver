@@ -1,7 +1,8 @@
 import {describe, expect, test} from '@jest/globals'
 import {lengthCheck, routesFlat, Traverse} from './common/common'
+import {PathResolver} from '../core/path-resolver'
 import {routesCheck} from './routes/routes.check'
-import {IRoute, PathResolver} from '../..'
+import {IRouteTest} from './common/contract'
 import {routes} from './routes/routes'
 
 describe(`clone`, () => {
@@ -13,14 +14,14 @@ describe(`clone`, () => {
   test('route', () => {
     lengthCheck(flatRoutes, flatPathResolverRoutes, flatRoutesCheck)
 
-    new Traverse().run(routes, (route: IRoute, totalCount) => {
+    new Traverse().run(routes, (route: IRouteTest, totalCount: number) => {
       expect(route === flatRoutes[totalCount]).toBeTruthy()
       expect(route === flatPathResolverRoutes[totalCount]).toBeFalsy()
     })
   })
 
   test('customTo', () => {
-    new Traverse().run(routes, (route: IRoute, totalCount) => {
+    new Traverse().run(routes, (route: IRouteTest, totalCount: number) => {
       if (route.customTo === undefined) {
         expect(flatRoutes[totalCount].customTo).toBeUndefined()
         expect(flatPathResolverRoutes[totalCount].customTo).toBeUndefined()
@@ -32,7 +33,7 @@ describe(`clone`, () => {
   })
 
   test('note', () => {
-    new Traverse().run(routes, (route: IRoute, totalCount) => {
+    new Traverse().run(routes, (route: IRouteTest, totalCount: number) => {
       if (route.note === undefined) {
         expect(flatRoutes[totalCount].note).toBeUndefined()
         expect(flatPathResolverRoutes[totalCount].note).toBeUndefined()

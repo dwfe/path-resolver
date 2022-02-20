@@ -1,5 +1,6 @@
 import {describe, expect, test} from '@jest/globals'
-import {IRoute, PathResolver} from '../..'
+import {PathResolver} from '../core/path-resolver'
+import {IRouteTest} from './common/contract'
 
 describe(`error 'lead slash'`, () => {
 
@@ -8,7 +9,7 @@ describe(`error 'lead slash'`, () => {
       new PathResolver([
         {path: ''},
         {path: '/hello'},
-      ] as IRoute[])
+      ] as IRouteTest[])
     }).toThrowError(new Error(`Invalid configuration of route, because path [ /hello ] cannot start with a slash`))
 
     expect(() => {
@@ -20,7 +21,7 @@ describe(`error 'lead slash'`, () => {
           ]
         },
         {path: 'music'},
-      ] as IRoute[])
+      ] as IRouteTest[])
     }).toThrowError(new Error(`Invalid configuration of route, because path [ /world ] cannot start with a slash`))
   })
 

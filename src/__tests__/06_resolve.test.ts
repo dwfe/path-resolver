@@ -1,13 +1,14 @@
 import {describe, expect, test} from '@jest/globals'
-import {IPathResolveResult, IRoute} from '../..'
+import {IPathResolveResult} from '../core/contract'
 import {initFlat} from './common/environment'
+import {IRouteTest} from './common/contract'
 import {Traverse} from './common/common'
 
 describe(`resolve`, () => {
   const {pathResolver, flatPathResolverRoutes, flatRoutesCheck} = initFlat()
 
   test('.', () => {
-    let res: IPathResolveResult, params, note
+    let res: IPathResolveResult, params
 
     // root not-found
     res = pathResolver.resolve('/some/not-exist') as IPathResolveResult
@@ -22,11 +23,11 @@ describe(`resolve`, () => {
     res = pathResolver.resolve('/books/2020/comics') as IPathResolveResult
     expect(res).toBeTruthy()
     expect(res.route.redirectTo).toBeFalsy()
-    params = res.pathParams
+    params = res.urlParams
     expect(params).toBeTruthy()
     expect(Object.keys(params).length).toEqual(2)
-    expect(params.year).toEqual('2020')
-    expect(params.genre).toEqual('comics')
+    expect(params['year']).toEqual('2020')
+    expect(params['genre']).toEqual('comics')
 
     // '/books/(.*)'
     res = pathResolver.resolve('/books/hello/world/123') as IPathResolveResult
@@ -36,19 +37,19 @@ describe(`resolve`, () => {
     // '/team/:id/group/:gr_id'
     res = pathResolver.resolve('/team/0/group/12') as IPathResolveResult
     expect(res).toBeTruthy()
-    params = res.pathParams
+    params = res.urlParams
     expect(params).toBeTruthy()
     expect(Object.keys(params).length).toEqual(2)
-    expect(params.id).toEqual('0')
-    expect(params.gr_id).toEqual('12')
+    expect(params['id']).toEqual('0')
+    expect(params['gr_id']).toEqual('12')
 
     // '/team/:id/user/:name'
     res = pathResolver.resolve('/team/56/user/tom') as IPathResolveResult
     expect(res).toBeTruthy()
-    params = res.pathParams
+    params = res.urlParams
     expect(Object.keys(params).length).toEqual(2)
-    expect(params.id).toEqual('56')
-    expect(params.name).toEqual('tom')
+    expect(params['id']).toEqual('56')
+    expect(params['name']).toEqual('tom')
 
     // '/team/:id/hr'
     res = pathResolver.resolve('/team/1/hr') as IPathResolveResult
@@ -69,27 +70,27 @@ describe(`resolve`, () => {
     // '/auto/:color'
     res = pathResolver.resolve('/auto/yellow') as IPathResolveResult
     expect(res).toBeTruthy()
-    params = res.pathParams
+    params = res.urlParams
     expect(Object.keys(params).length).toEqual(1)
-    expect(params.color).toEqual('yellow')
+    expect(params['color']).toEqual('yellow')
 
     // '/auto/check/redirect'
     res = pathResolver.resolve('/auto/check/redirect') as IPathResolveResult
     expect(res).toBeTruthy()
     expect(res.route.customTo).toEqual({pathname: '/auto/aqua', search: 'hello=12', hash: 'qwe'})
-    params = res.pathParams
+    params = res.urlParams
     expect(Object.keys(params).length).toEqual(0)
 
     // '/455'
     res = pathResolver.resolve('/455') as IPathResolveResult
     expect(res).toBeTruthy()
     expect(res.route.component).toEqual('user')
-    expect(res.pathParams.userId).toEqual('455')
+    expect(res.urlParams['userId']).toEqual('455')
 
   })
 
   test('clone resolve', () => {
-    new Traverse().run(flatPathResolverRoutes, (route: IRoute, totalCount) => {
+    new Traverse().run(flatPathResolverRoutes, (route: IRouteTest, totalCount: number) => {
       // [path] routesCheck === pathResolver.routes
       expect(route.path).toEqual(flatRoutesCheck[totalCount].path)
 

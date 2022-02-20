@@ -1,5 +1,6 @@
 import {compile, match as matcher, MatchResult} from 'path-to-regexp'
-import {IActionResult, IPathResolveResult, IPathResolverOpt, IRoute, TPathParams} from './contract'
+import {IUrlParams} from '@do-while-for-each/common'
+import {IActionResult, IPathResolveResult, IPathResolverOpt, IRoute} from './contract'
 import {Check} from './check'
 import {Clone} from './clone'
 import {Init} from './init'
@@ -28,19 +29,19 @@ export class PathResolver {
         continue;
       }
 
-      const match: MatchResult<TPathParams> | false = matcher<TPathParams>(route.path)(pathname)
+      const match: MatchResult<IUrlParams> | false = matcher<IUrlParams>(route.path)(pathname)
       this.log(`[${match ? 'v' : 'x'}] ${route.path}`)
 
       if (match && !Check.needToMatchChildren(route)) {
         route = Clone.route(route)
-        const pathParams = match.params
+        const urlParams = match.params
         if (route.redirectTo) {
-          route.redirectTo = compile(route.redirectTo)(pathParams)
+          route.redirectTo = compile(route.redirectTo)(urlParams)
         }
-        if (route.customTo) {
-          route.customTo.pathname = compile(route.customTo.pathname)(pathParams)
+        if (route.customTo?.pathname) {
+          route.customTo.pathname = compile(route.customTo.pathname)(urlParams)
         }
-        return {route, pathParams, parentRoute}
+        return {route, urlParams, parentRoute}
       }
       const found = this.find(pathname, route.children, route)
       if (found) return found
@@ -55,14 +56,14 @@ export class PathResolver {
     result.redirectTo = Init.to(result.redirectTo, parentPath)
     result.customTo = Init.customTo(result.customTo, parentPath)
 
-    const match: MatchResult<TPathParams> | false = matcher<TPathParams>(route.path)(pathname)
+    const match: MatchResult<IUrlParams> | false = matcher<IUrlParams>(route.path)(pathname)
     if (match) {
-      const pathParams = match.params
+      const urlParams = match.params
       if (result.redirectTo !== undefined) {
-        result.redirectTo = compile(result.redirectTo)(pathParams)
+        result.redirectTo = compile(result.redirectTo)(urlParams)
       }
-      if (result.customTo) {
-        result.customTo.pathname = compile(result.customTo.pathname)(pathParams)
+      if (result.customTo?.pathname) {
+        result.customTo.pathname = compile(result.customTo.pathname)(urlParams)
       }
     }
   }

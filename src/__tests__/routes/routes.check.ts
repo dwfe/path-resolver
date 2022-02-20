@@ -1,6 +1,6 @@
-import {IRoute} from '../../..'
+import {IRouteTest} from '../common/contract'
 
-export const routesCheck: IRoute[] = [
+export const routesCheck: IRouteTest[] = [
   {
     path: '/', children: [
       {path: '/', component: '', note: {title: 'Index page'}},

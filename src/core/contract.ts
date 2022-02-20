@@ -1,23 +1,15 @@
+import {IPath, IUrlParams} from '@do-while-for-each/common'
 import {Location} from 'history'
 
 export interface IPathResolveResult {
   route: IRoute;
-  pathParams: TPathParams;
+  urlParams: IUrlParams;
   parentRoute?: IRoute;
 }
 
 export interface IPathResolverOpt {
   isDebug?: boolean;
 }
-
-export type TPathParams = { [key: string]: string; }
-
-export interface IPath {
-  pathname?: string;
-  search?: string;
-  hash?: string;
-}
-
 
 export interface IRoute<TComponent = any, TNote = any,
   TActionResult extends IActionResult<TComponent> = IActionResult<TComponent>,
@@ -81,7 +73,7 @@ export interface IActionResult<TComponent = any> {
 }
 
 export interface IActionDataTarget extends IPath {
-  pathParams: TPathParams;
+  urlParams: IUrlParams;
 }
 
 export interface ICustomTo extends IPath {
