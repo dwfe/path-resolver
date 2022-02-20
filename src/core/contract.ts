@@ -11,20 +11,21 @@ export interface IPathResolverOpt {
   isDebug?: boolean;
 }
 
-export interface IRoute<TComponent = any, TNote = any,
-  TActionResult extends IActionResult<TComponent> = IActionResult<TComponent>,
-  TContext extends TRouteContext = TRouteContext> {
+
+export interface IRoute<TComponent = any,
+  TNote = any,
+  TActionResult extends IActionResult<TComponent> = IActionResult<TComponent>> {
 
   path: string; // see syntax here: https://www.npmjs.com/package/path-to-regexp
 
-  canActivate?: (data: IActionData<TNote, TContext>) => Promise<TActionResult>;
-  canDeactivate?: (tryRelocation: Location<TContext>, data: IActionData<TNote, TContext>) => Promise<boolean>;
+  canActivate?: (data: IActionData<TNote>) => Promise<TActionResult>;
+  canDeactivate?: (tryRelocation: Location, data: IActionData<TNote>) => Promise<boolean>;
 
   redirectTo?: string;
   customTo?: ICustomTo;
   component?: TComponent;
 
-  action?: (data: IActionData<TNote, TContext>) => Promise<TActionResult>;
+  action?: (data: IActionData<TNote>) => Promise<TActionResult>;
 
   children?: IRoute[];
 
@@ -33,7 +34,7 @@ export interface IRoute<TComponent = any, TNote = any,
   name?: string;
 }
 
-export interface IActionData<TNote = any, TContext extends TRouteContext = TRouteContext> {
+export interface IActionData<TNote = any> {
 
   target: IActionDataTarget;
 
@@ -49,7 +50,7 @@ export interface IActionData<TNote = any, TContext extends TRouteContext = TRout
    *   - user follows an uncontrolled direct link (I mean, you can't set the context when you click).
    * for independent reuse of values better use 'target.search' or 'note' fields
    */
-  ctx: TContext;
+  // ctx: TContext;
 
   /**
    * A unique string associated with this location. May be used to safely store
@@ -61,7 +62,7 @@ export interface IActionData<TNote = any, TContext extends TRouteContext = TRout
    */
   key: string;
 
-  previous?: IActionData<TNote, TContext>;
+  previous?: IActionData<TNote>;
 
 }
 
