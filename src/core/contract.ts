@@ -3,8 +3,8 @@ import {Location} from 'history'
 
 export interface IPathResolveResult {
   route: IRoute;
-  urlParams: IUrlParams;
   parentRoute?: IRoute;
+  urlParams: IUrlParams;
 }
 
 export interface IPathResolverOpt {
