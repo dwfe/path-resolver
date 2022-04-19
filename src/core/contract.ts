@@ -16,11 +16,11 @@ export interface IPathResolverOpt {
   isDebug?: boolean;
 }
 
-export interface IRoute<TComponent = any, TNote = any,
+export abstract class IRoute<TComponent = any, TNote = any,
   TActionResult extends IActionResult<TComponent> = IActionResult<TComponent>,
   TContext extends TRouteContext = TRouteContext> {
 
-  path: string; // see syntax here: https://www.npmjs.com/package/path-to-regexp
+  path!: string; // see syntax here: https://www.npmjs.com/package/path-to-regexp
 
   component?: TComponent;
   redirectTo?: string;
