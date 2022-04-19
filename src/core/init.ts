@@ -1,11 +1,11 @@
 import {ICustomTo, IRoute} from './contract'
+import {checkLeadSlash} from './check'
 import {Clone} from './clone'
-import {Check} from './check'
 
 export class Init {
 
   static route(r: IRoute, parentPath: string): IRoute {
-    Check.leadSlash(r.path)
+    checkLeadSlash(r.path)
     const route = Clone.route(r)
     route.path = Init.path(route.path, parentPath)
     route.redirectTo = Init.to(route.redirectTo, parentPath)

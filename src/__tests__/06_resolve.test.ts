@@ -23,7 +23,7 @@ describe(`resolve`, () => {
     res = pathResolver.resolve('/books/2020/comics') as IPathResolveResult
     expect(res).toBeTruthy()
     expect(res.route.redirectTo).toBeFalsy()
-    params = res.urlParams
+    params = res.pathnameParams
     expect(params).toBeTruthy()
     expect(Object.keys(params).length).toEqual(2)
     expect(params['year']).toEqual('2020')
@@ -37,7 +37,7 @@ describe(`resolve`, () => {
     // '/team/:id/group/:gr_id'
     res = pathResolver.resolve('/team/0/group/12') as IPathResolveResult
     expect(res).toBeTruthy()
-    params = res.urlParams
+    params = res.pathnameParams
     expect(params).toBeTruthy()
     expect(Object.keys(params).length).toEqual(2)
     expect(params['id']).toEqual('0')
@@ -46,7 +46,7 @@ describe(`resolve`, () => {
     // '/team/:id/user/:name'
     res = pathResolver.resolve('/team/56/user/tom') as IPathResolveResult
     expect(res).toBeTruthy()
-    params = res.urlParams
+    params = res.pathnameParams
     expect(Object.keys(params).length).toEqual(2)
     expect(params['id']).toEqual('56')
     expect(params['name']).toEqual('tom')
@@ -70,7 +70,7 @@ describe(`resolve`, () => {
     // '/auto/:color'
     res = pathResolver.resolve('/auto/yellow') as IPathResolveResult
     expect(res).toBeTruthy()
-    params = res.urlParams
+    params = res.pathnameParams
     expect(Object.keys(params).length).toEqual(1)
     expect(params['color']).toEqual('yellow')
 
@@ -78,14 +78,14 @@ describe(`resolve`, () => {
     res = pathResolver.resolve('/auto/check/redirect') as IPathResolveResult
     expect(res).toBeTruthy()
     expect(res.route.customTo).toEqual({pathname: '/auto/aqua', search: 'hello=12', hash: 'qwe'})
-    params = res.urlParams
+    params = res.pathnameParams
     expect(Object.keys(params).length).toEqual(0)
 
     // '/455'
     res = pathResolver.resolve('/455') as IPathResolveResult
     expect(res).toBeTruthy()
     expect(res.route.component).toEqual('user')
-    expect(res.urlParams['userId']).toEqual('455')
+    expect(res.pathnameParams['userId']).toEqual('455')
 
   })
 

@@ -1,7 +1,7 @@
-import {compile, match as matcher, MatchResult} from 'path-to-regexp'
-import {IUrlParams} from '@do-while-for-each/common'
-import {IActionResult, IPathResolveResult, IPathResolverOpt, IRoute} from './contract'
-import {Check} from './check'
+import {IPathnameParams} from '@do-while-for-each/common'
+import {compile, match as matcher} from 'path-to-regexp'
+import {IActionResult, IPathResolveResult, IPathResolverOpt, IRoute, TMatchResult} from './contract'
+import {needToMatchChildren, skipBranch} from './check'
 import {Clone} from './clone'
 import {Init} from './init'
 
@@ -13,38 +13,40 @@ export class PathResolver {
     this.routes = routes.map(route => Init.route(route, '/'))
   }
 
-  resolve(pathname: string): IPathResolveResult | undefined {
+  resolve(pathname: string): undefined | IPathResolveResult {
     this.log(`resolving '${pathname}'`)
     return this.find(pathname, this.routes)
   }
 
-  find(pathname: string, routes: IRoute[] | undefined, parentRoute?: IRoute): IPathResolveResult | undefined {
-    if (!routes) return;
+  find(pathname: string, routes?: IRoute[], parentRoute?: IRoute): undefined | IPathResolveResult {
+    if (!routes)
+      return;
 
     for (let i = 0; i < routes.length; i++) {
       let route = routes[i]
 
-      if (Check.skipBranch(route.path, pathname)) {
+      if (skipBranch(route.path, pathname)) {
         this.log(`[x] ${route.path}, skip branch`)
         continue;
       }
 
-      const match: MatchResult<IUrlParams> | false = matcher<IUrlParams>(route.path)(pathname)
+      const match: TMatchResult = matcher<IPathnameParams>(route.path)(pathname)
       this.log(`[${match ? 'v' : 'x'}] ${route.path}`)
 
-      if (match && !Check.needToMatchChildren(route)) {
+      if (match && !needToMatchChildren(route)) {
         route = Clone.route(route)
-        const urlParams = match.params
+        const pathnameParams = match.params
         if (route.redirectTo) {
-          route.redirectTo = compile(route.redirectTo)(urlParams)
+          route.redirectTo = compile(route.redirectTo)(pathnameParams)
         }
         if (route.customTo?.pathname) {
-          route.customTo.pathname = compile(route.customTo.pathname)(urlParams)
+          route.customTo.pathname = compile(route.customTo.pathname)(pathnameParams)
         }
-        return {route, urlParams, parentRoute}
+        return {route, parentRoute, pathnameParams}
       }
       const found = this.find(pathname, route.children, route)
-      if (found) return found
+      if (found)
+        return found
     }
   }
 
@@ -56,14 +58,14 @@ export class PathResolver {
     result.redirectTo = Init.to(result.redirectTo, parentPath)
     result.customTo = Init.customTo(result.customTo, parentPath)
 
-    const match: MatchResult<IUrlParams> | false = matcher<IUrlParams>(route.path)(pathname)
+    const match: TMatchResult = matcher<IPathnameParams>(route.path)(pathname)
     if (match) {
-      const urlParams = match.params
+      const pathnameParams = match.params
       if (result.redirectTo !== undefined) {
-        result.redirectTo = compile(result.redirectTo)(urlParams)
+        result.redirectTo = compile(result.redirectTo)(pathnameParams)
       }
       if (result.customTo?.pathname) {
-        result.customTo.pathname = compile(result.customTo.pathname)(urlParams)
+        result.customTo.pathname = compile(result.customTo.pathname)(pathnameParams)
       }
     }
   }

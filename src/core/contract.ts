@@ -1,10 +1,15 @@
-import {IPath, IUrlParams} from '@do-while-for-each/common'
+import {IPath, IPathnameParams} from '@do-while-for-each/common'
+import {MatchResult} from 'path-to-regexp';
 import {Location} from 'history'
+
+export interface ILocation<TState = any> extends Location {
+  state: TState;
+}
 
 export interface IPathResolveResult {
   route: IRoute;
   parentRoute?: IRoute;
-  urlParams: IUrlParams;
+  pathnameParams: IPathnameParams;
 }
 
 export interface IPathResolverOpt {
@@ -17,16 +22,15 @@ export interface IRoute<TComponent = any, TNote = any,
 
   path: string; // see syntax here: https://www.npmjs.com/package/path-to-regexp
 
-  canActivate?: (data: IActionData<TNote, TContext>) => Promise<TActionResult>;
-  canDeactivate?: (tryRelocation: Location<TContext>, data: IActionData<TNote, TContext>) => Promise<boolean>;
-
+  component?: TComponent;
   redirectTo?: string;
   customTo?: ICustomTo;
-  component?: TComponent;
-
   action?: (data: IActionData<TNote, TContext>) => Promise<TActionResult>;
 
   children?: IRoute[];
+
+  canActivate?: (data: IActionData<TNote, TContext>) => Promise<TActionResult>;
+  canDeactivate?: (tryRelocation: ILocation<TContext>, data: IActionData<TNote, TContext>) => Promise<boolean>;
 
   note?: TNote;
 
@@ -66,20 +70,23 @@ export interface IActionData<TNote = any, TContext extends TRouteContext = TRout
 }
 
 export interface IActionResult<TComponent = any> {
+  component?: TComponent;
   redirectTo?: string;
   customTo?: ICustomTo;
-  component?: TComponent;
   skip?: boolean; // if 'true' then stage 'CanActivate' will skip the processing to next stage
 }
 
 export interface IActionDataTarget extends IPath {
-  urlParams: IUrlParams;
+  pathnameParams: IPathnameParams;
 }
 
 export interface ICustomTo extends IPath {
-  isRedirect?: boolean; // if not set, it equals 'true'
+  asGoto?: boolean; // otherwise treated as a redirect
 }
 
 export type TRouteContext = {
-  previousActionData?: IActionData<TRouteContext>;
+  actionData?: IActionData<TRouteContext>;
 } | null // because history package type 'State' = object | null
+
+
+export type TMatchResult = MatchResult<IPathnameParams> | false;
