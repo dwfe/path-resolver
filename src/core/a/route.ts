@@ -10,7 +10,7 @@ export class Route extends IRoute {
               public readonly parent?: Route) {
     super();
     this.path = Route.normalizePath(orig, parent);
-
+    this.children = Route.normalizeChildren(orig, this);
   }
 
 
@@ -37,5 +37,9 @@ export class Route extends IRoute {
     if (parent && parent.path !== '/')
       prefix = parent.path;
     return prefix + '/' + orig.path;
+  }
+
+  static normalizeChildren({children}: IRoute, parent: Route): Route[] | undefined {
+    return children?.map(orig => Route.of(orig, parent));
   }
 }
