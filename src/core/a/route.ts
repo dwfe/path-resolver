@@ -14,14 +14,28 @@ export class Route extends IRoute {
   }
 
 
-  static normalizePath(route: IRoute, parent?: Route): string {
-    if (route.path[0] === '/') {
-      console.error(`Invalid configuration of route, because path "${route.path}" cannot start with a slash`);
-      throw new Error(`Invalid route's "path"`);
+  static normalizePath(orig: IRoute, parent?: Route): string {
+    if (orig.path[0] === '/') {
+      console.error(`Invalid configuration of route, because path "${orig.path}" cannot start with a slash`);
+      throw new Error(`Invalid route's "path" [cannot start with a slash]`);
     }
-    if (route.path === '')
-      return '/';
-    let prefix = parent && parent.path !== '/' ? parent.path : '';
-    return prefix + '/' + route.path;
+    switch (orig.path) {
+      case '':
+        if (parent) {
+          console.error('A non-root route cannot have an empty "path":', orig);
+          throw new Error(`Invalid route's "path" [non-root empty]`);
+        }
+        return '/';
+      case '(.*)':
+        if (parent?.path === '/') {
+          console.error('Incorrect location for "(.*)" path. Position it at the root:', orig);
+          throw new Error('Incorrect location for "(.*)" path. Position it at the root');
+        }
+        break;
+    }
+    let prefix = '';
+    if (parent && parent.path !== '/')
+      prefix = parent.path;
+    return prefix + '/' + orig.path;
   }
 }

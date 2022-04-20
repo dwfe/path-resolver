@@ -1,12 +1,15 @@
 import {describe} from '@jest/globals';
-import {Route} from '../../core/a/route';
+import {path, rootPath} from './constructor-normalization.test'
 import {toThrow} from '../util';
 
 
-describe(`Route.constructor, incorrect use`, () => {
+describe('Route.constructor, incorrect use', () => {
 
-  test(`path`, () => {
-    toThrow(() => Route.of({path: '/'}), `Invalid route's "path"`);
+  test('path', () => {
+    toThrow(() => rootPath('/'), `Invalid route's "path" [cannot start with a slash]`);
+    toThrow(() => path('', '/'), `Invalid route's "path" [cannot start with a slash]`);
+    toThrow(() => path('', ''), `Invalid route's "path" [non-root empty]`);
+    toThrow(() => path('', '(.*)'), 'Incorrect location for "(.*)" path. Position it at the root');
   });
 
 });

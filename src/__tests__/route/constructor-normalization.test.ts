@@ -1,25 +1,39 @@
 import {describe, expect} from '@jest/globals';
 import {Route} from '../../core/a/route';
-import {IRoute} from '../../core/contract';
 
-function path(testPath: string, parentOrig: any = null, orig: IRoute) {
-  const parent = parentOrig && Route.of(parentOrig) || parentOrig as Route;
-  const route = Route.of(orig, parent);
-  expect(route.orig.path).toBe(orig.path);
-  expect(route.path).toBe(testPath);
+//region Support
+
+export function path(parentPath: string, origPath: string, testPath?: string) {
+  const parent = parentPath !== undefined && Route.of({path: parentPath}) || undefined;
+  const route = Route.of({path: origPath}, parent);
+  expect(route.orig.path).toBe(origPath);
+  if (testPath !== undefined)
+    expect(route.path).toBe(testPath);
 }
 
-describe(`Route.constructor, normal use`, () => {
+export function rootPath(origPath: string, testPath?: string) {
+  path(undefined as unknown as string, origPath, testPath);
+}
 
-  test(`path`, () => {
-    path('/', null, {path: ''});
-    path('/user', null, {path: 'user'});
-    path('/user', {path: ''}, {path: 'user'});
-    path('/user', {path: ''}, {path: ''});
-    path('/account/user', {path: 'account'}, {path: 'user'});
-    path('/:user', {path: ''}, {path: 'user'});
-    // path('',);
+//endregion Support
 
+describe('Route.constructor, normal use', () => {
+
+  test('path', () => {
+    rootPath('', '/');
+    rootPath('user', '/user');
+    rootPath(':user', '/:user');
+    rootPath(':user', '/:user');
+    rootPath('(.*)', '/(.*)');
+
+    path('', 'user', '/user');
+    path('', ':user', '/:user');
+    path('control', 'user', '/control/user');
+    path('control', ':user', '/control/:user');
+    path(':control', 'user', '/:control/user');
+    path(':control', ':user', '/:control/:user');
+    path('user', '(.*)', '/user/(.*)');
+    path(':user', '(.*)', '/:user/(.*)');
   });
 
 });
