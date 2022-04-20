@@ -41,7 +41,8 @@
     "build": "dwfeFs rmForce dist --noConfirm && tsc -b src/tsconfig.json",
     "types": "tsc -b config/tsconfig.types.json",
     "test": "jest --config=src/__tests__/jest.config.js",
-    "build_types_test": "npm run build && npm run types && npm run test",
+    "build_types": "npm run build && npm run types",
+    "build_types_test": "npm run build_types && npm run test",
     "version": "npm run build_types_test",
     "postversion": "git push",
     "deploy": "npm version patch && npm publish"
