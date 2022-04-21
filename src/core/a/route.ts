@@ -14,6 +14,8 @@ export class Route extends IRoute {
   }
 
 
+//region Normalization & Validation
+
   static normalizePath(orig: IRoute, parent?: Route): string {
     if (orig.path[0] === '/') {
       console.error(`Invalid configuration of route, because path "${orig.path}" cannot start with a slash`);
@@ -42,4 +44,7 @@ export class Route extends IRoute {
   static normalizeChildren({children}: IRoute, parent: Route): Route[] | undefined {
     return children?.map(orig => Route.of(orig, parent));
   }
+
+//endregion Normalization & Validation
+
 }
