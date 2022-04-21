@@ -15,6 +15,8 @@ export function rootPath(origPath: string, testPath?: string) {
   path(undefined as unknown as string, origPath, testPath);
 }
 
+
+
 //endregion Support
 
 describe('Route.constructor, normal use', () => {
