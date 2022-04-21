@@ -1,6 +1,6 @@
 import {expect} from '@jest/globals'
 
-export function toThrow(fn: Function, message: string) {
+export function Throw(fn: Function, message: string) {
   try {
     fn();
   } catch (err) {

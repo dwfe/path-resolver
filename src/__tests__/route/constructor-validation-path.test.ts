@@ -1,36 +1,36 @@
 import {describe} from '@jest/globals';
 import {Route} from '../../core/a/route'
-import {noThrow, toThrow} from '../util';
+import {noThrow, Throw} from '../util';
 
 describe('"path" incorrect use', () => {
 
   test('cannot start with a slash', () => {
-    toThrow(() => Route.of({path: '/'}), `Invalid route's "path" [cannot start with a slash]`);
-    toThrow(() => Route.of({path: '/user'}), `Invalid route's "path" [cannot start with a slash]`);
-    toThrow(() => Route.of({path: '/:user'}), `Invalid route's "path" [cannot start with a slash]`);
-    toThrow(() => Route.of({
+    Throw(() => Route.of({path: '/'}), `Invalid route's "path" [cannot start with a slash]`);
+    Throw(() => Route.of({path: '/user'}), `Invalid route's "path" [cannot start with a slash]`);
+    Throw(() => Route.of({path: '/:user'}), `Invalid route's "path" [cannot start with a slash]`);
+    Throw(() => Route.of({
       path: '', children: [{
         path: '/'
       }]
     }), `Invalid route's "path" [cannot start with a slash]`);
-    toThrow(() => Route.of({
+    Throw(() => Route.of({
       path: '', children: [{
         path: '/user'
       }]
     }), `Invalid route's "path" [cannot start with a slash]`);
-    toThrow(() => Route.of({
+    Throw(() => Route.of({
       path: '', children: [{
         path: '/:user'
       }]
     }), `Invalid route's "path" [cannot start with a slash]`);
-    toThrow(() => Route.of({
+    Throw(() => Route.of({
       path: '', children: [{
         path: 'user', children: [{
           path: '/'
         }]
       }]
     }), `Invalid route's "path" [cannot start with a slash]`);
-    toThrow(() => Route.of({
+    Throw(() => Route.of({
       path: '', children: [{
         path: 'user', children: [{
           path: '/info'
@@ -40,29 +40,29 @@ describe('"path" incorrect use', () => {
   });
 
   test('non-root empty', () => {
-    toThrow(() => Route.of({
+    Throw(() => Route.of({
       path: '', children: [{
         path: ''
       }]
     }), `Invalid route's "path" [non-root empty]`);
-    toThrow(() => Route.of({
+    Throw(() => Route.of({
       path: '', children: [{
         path: 'user', children: [{
           path: ''
         }]
       }]
     }), `Invalid route's "path" [non-root empty]`);
-    toThrow(() => Route.of({
+    Throw(() => Route.of({
       path: 'user', children: [{
         path: ''
       }]
     }), `Invalid route's "path" [non-root empty]`);
-    toThrow(() => Route.of({
+    Throw(() => Route.of({
       path: ':user', children: [
         {path: ''}
       ]
     }), `Invalid route's "path" [non-root empty]`);
-    toThrow(() => Route.of({
+    Throw(() => Route.of({
       path: 'user', children: [{
         path: 'info', children: [{
           path: ''
@@ -72,7 +72,7 @@ describe('"path" incorrect use', () => {
   });
 
   test('"(.*)" incorrect location', () => {
-    toThrow(() => Route.of({
+    Throw(() => Route.of({
       path: '', children: [{
         path: '(.*)'
       }]
