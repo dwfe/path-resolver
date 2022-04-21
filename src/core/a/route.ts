@@ -19,6 +19,7 @@ export class Route extends IRoute {
 
   static normalizePath(orig: IRoute, parent?: Route): string {
     let path = orig.path;
+    const hasParent = !!parent;
     if (path[0] === '/') {
       console.error(`Invalid configuration of route, because path "${path}" cannot start with a slash:`, orig);
       throw new Error(`Invalid route's "path" [cannot start with a slash]`);
@@ -29,23 +30,20 @@ export class Route extends IRoute {
     }
     switch (path) {
       case '':
-        if (parent) {
+        if (orig.children) {
+          console.error('A route with path "" cannot have children:', orig);
+          throw new Error('A route with path "" cannot have children');
+        }
+        if (hasParent) {
           console.error('A non-root route cannot have an empty "path":', orig);
           throw new Error(`Invalid route's "path" [non-root empty]`);
         }
         return '/';
       case WILDCARD_PATH:
-        if (parent?.path === '/') {
-          console.error(`Incorrect location for wildcard path "${path}" because of parent.path is the root. Position wildcard at the root:`, orig);
-          throw new Error('Incorrect location for wildcard path because of parent.path is the root. Position wildcard at the root');
-        }
         path = INNER_WILDCARD_PATH;
         break;
     }
-    let prefix = '';
-    if (parent && parent.path !== '/')
-      prefix = parent.path;
-    return prefix + '/' + path;
+    return (hasParent && parent.path || '') + '/' + path;
   }
 
   static normalizeChildren({children}: IRoute, parent: Route): Route[] | undefined {

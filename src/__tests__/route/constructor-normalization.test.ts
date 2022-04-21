@@ -20,9 +20,32 @@ export function rootPath(origPath: string, testPath?: string) {
 describe('Route.constructor, normal use', () => {
 
   test('path', () => {
+    Route.of({path: ''}) // '/'
+    Route.of({path: 'user'}) // '/user'
+    Route.of({path: ':user'}) // '/:user'
+    Route.of({path: '**'}) // '/(.*)'
+
+    Route.of({
+      path: 'control', children: [{
+        path: 'user'
+      }]
+    }) // '/control/user'
+    Route.of({
+      path: 'control', children: [{
+        path: ':user'
+      }]
+    }) // '/control/:user'
+    Route.of({
+      path: 'control', children: [{
+        path: '**'
+      }]
+    }) // '/control/(.*)'
+
+  });
+
+  test('path', () => {
     rootPath('', '/');
     rootPath('user', '/user');
-    rootPath(':user', '/:user');
     rootPath(':user', '/:user');
     rootPath('**', '/(.*)');
 

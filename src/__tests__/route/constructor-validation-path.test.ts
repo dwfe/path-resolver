@@ -1,7 +1,7 @@
 import {describe} from '@jest/globals';
 import {WILDCARD_PATH} from '../../core/a/util';
 import {Route} from '../../core/a/route'
-import {noThrow, Throw} from '../util';
+import {Throw} from '../util';
 
 describe('"path" incorrect use', () => {
 
@@ -10,31 +10,14 @@ describe('"path" incorrect use', () => {
     Throw(() => Route.of({path: '/user'}), `Invalid route's "path" [cannot start with a slash]`);
     Throw(() => Route.of({path: '/:user'}), `Invalid route's "path" [cannot start with a slash]`);
     Throw(() => Route.of({
-      path: '', children: [{
-        path: '/'
+      path: 'user', children: [{
+        path: '/info'
       }]
     }), `Invalid route's "path" [cannot start with a slash]`);
     Throw(() => Route.of({
-      path: '', children: [{
-        path: '/user'
-      }]
-    }), `Invalid route's "path" [cannot start with a slash]`);
-    Throw(() => Route.of({
-      path: '', children: [{
-        path: '/:user'
-      }]
-    }), `Invalid route's "path" [cannot start with a slash]`);
-    Throw(() => Route.of({
-      path: '', children: [{
-        path: 'user', children: [{
-          path: '/'
-        }]
-      }]
-    }), `Invalid route's "path" [cannot start with a slash]`);
-    Throw(() => Route.of({
-      path: '', children: [{
-        path: 'user', children: [{
-          path: '/info'
+      path: ':user', children: [{
+        path: 'info', children: [{
+          path: '/job'
         }]
       }]
     }), `Invalid route's "path" [cannot start with a slash]`);
@@ -42,29 +25,17 @@ describe('"path" incorrect use', () => {
 
   test('non-root empty', () => {
     Throw(() => Route.of({
-      path: '', children: [{
-        path: ''
-      }]
-    }), `Invalid route's "path" [non-root empty]`);
-    Throw(() => Route.of({
-      path: '', children: [{
-        path: 'user', children: [{
-          path: ''
-        }]
-      }]
-    }), `Invalid route's "path" [non-root empty]`);
-    Throw(() => Route.of({
       path: 'user', children: [{
         path: ''
       }]
     }), `Invalid route's "path" [non-root empty]`);
     Throw(() => Route.of({
-      path: ':user', children: [
+      path: 'user', children: [
         {path: ''}
       ]
     }), `Invalid route's "path" [non-root empty]`);
     Throw(() => Route.of({
-      path: 'user', children: [{
+      path: ':user', children: [{
         path: 'info', children: [{
           path: ''
         }]
@@ -72,23 +43,28 @@ describe('"path" incorrect use', () => {
     }), `Invalid route's "path" [non-root empty]`);
   });
 
-  test('"(.*)" incorrect location', () => {
+  test('path "" cannot have children', () => {
+    Throw(() => Route.of({
+      path: '', children: [{
+        path: 'user'
+      }]
+    }), 'A route with path "" cannot have children');
+    Throw(() => Route.of({
+      path: '', children: [{
+        path: 'user', children: [{
+          path: 'info'
+        }]
+      }]
+    }), 'A route with path "" cannot have children');
     Throw(() => Route.of({
       path: '', children: [{
         path: WILDCARD_PATH
       }]
-    }), 'Incorrect location for wildcard path because of parent.path is the root. Position wildcard at the root');
-    noThrow(() => Route.of({
-      path: 'user', children: [{
-        path: 'info', children: [{
-          path: WILDCARD_PATH
-        }]
-      }]
-    }));
+    }), 'A route with path "" cannot have children');
   });
 
   test('"(.*)" incorrect wildcard', () => {
-    const wildCards = ['*', '(*)', '(.*)', '(.**)'];
+    const wildCards = ['*', '(*)', '(.*)', '(.**)', '   *'];
     for (const wildCard of wildCards) {
       Throw(() => Route.of({
         path: wildCard
