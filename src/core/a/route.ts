@@ -3,6 +3,8 @@ import {IRoute} from '../contract'
 
 export class Route extends IRoute {
 
+  children?: Route[];
+
   static of(orig: IRoute, parent?: Route): Route {
     return new Route(orig, parent);
   }
@@ -59,6 +61,21 @@ export class Route extends IRoute {
     const clonedOrig = {...route.orig};
     delete clonedOrig.children;
     return Route.of(clonedOrig, parent);
+  }
+
+  static flat(route: Route): Route[]{
+    const result: any[] = [];
+    const cloned = {...route} as Route;
+    const {children} = cloned;
+    let childrenFlated: Route[] = [];
+    if (children) {
+      delete cloned.children;
+      childrenFlated = children.map(x => Route.flat(x)).flat();
+
+    }
+    result.push(cloned);
+    result.push(...childrenFlated);
+    return result;
   }
 
 }

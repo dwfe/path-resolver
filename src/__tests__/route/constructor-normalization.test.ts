@@ -16,10 +16,23 @@ export function rootPath(origPath: string, testPath?: string) {
 }
 
 
-
 //endregion Support
 
 describe('Route.constructor, normal use', () => {
+
+  test('path', () => {
+    expect(Route.flat(
+      Route.of({
+        path: 'control', children: [{
+          path: ':user', children: [{
+            path: '**'
+          }],
+        }, {
+          path: 'billing'
+        }]
+      }) // '/control/:user'
+    )).toBe(1)
+  });
 
   test('path', () => {
     Route.of({path: ''}) // '/'
