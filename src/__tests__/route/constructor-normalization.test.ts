@@ -24,7 +24,7 @@ describe('Route.constructor, normal use', () => {
     rootPath('user', '/user');
     rootPath(':user', '/:user');
     rootPath(':user', '/:user');
-    rootPath('(.*)', '/(.*)');
+    rootPath('**', '/(.*)');
 
     path('', 'user', '/user');
     path('', ':user', '/:user');
@@ -32,8 +32,8 @@ describe('Route.constructor, normal use', () => {
     path('control', ':user', '/control/:user');
     path(':control', 'user', '/:control/user');
     path(':control', ':user', '/:control/:user');
-    path('user', '(.*)', '/user/(.*)');
-    path(':user', '(.*)', '/:user/(.*)');
+    path('user', '**', '/user/(.*)');
+    path(':user', '**', '/:user/(.*)');
   });
 
 });
