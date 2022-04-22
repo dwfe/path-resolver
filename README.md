@@ -121,3 +121,45 @@ Entry.of({
 ```
 
 here when navigating along the path `/control/user` will lead to a redirect to the root of the application.
+
+## `component`
+
+Anything.  
+For example, in the case of a router in the browser, it can be React.js component:
+
+```
+{segment: '', component: <IndexPage/>}
+```
+
+## `redirectTo`
+
+Where to redirect.  
+String.  
+If set, it must start with the character `/`.
+
+## `customTo`
+
+Object of the type ([pathname](https://developer.mozilla.org/en-US/docs/Web/API/URL/pathname), [search](https://developer.mozilla.org/en-US/docs/Web/API/URL/search), [hash](https://developer.mozilla.org/en-US/docs/Web/API/URL/hash)):
+
+```typescript
+interface ICustomTo {
+  pathname: string;
+  search?: string;
+  hash?: string;
+  asGoto?: boolean; // otherwise treated as a redirect
+}
+```
+
+If set, it `pathname` must start with the character `/`.
+
+## `action`
+
+## `children`
+
+## `canActivate`
+
+## `canDeactivate`
+
+## `note`
+
+## `name`

@@ -1,5 +1,5 @@
-import {cloneSimple, isNotJustObject} from '@do-while-for-each/common';
-import {INNER_WILDCARD_SEGMENT, isFunction, WILDCARD_SEGMENT} from './util';
+import {cloneSimple, isFunction, isNotJustObject, isString} from '@do-while-for-each/common';
+import {INNER_WILDCARD_SEGMENT, WILDCARD_SEGMENT} from './util';
 import {ICustomTo, IEntry} from '../contract'
 
 /**
@@ -75,7 +75,7 @@ export class Entry {
   static normalizePath(orig: IEntry, parent?: Entry): string {
     let {segment} = orig;
     const hasParent = !!parent;
-    if (typeof segment !== 'string') {
+    if (!isString(segment)) {
       console.error('The segment must be a string', orig);
       throw new Error('The segment must be a string');
     }
@@ -106,11 +106,15 @@ export class Entry {
   }
 
   static normalizeRedirectTo(redirectTo?: string): string | undefined {
-    if (!redirectTo)
+    if (redirectTo === undefined)
       return;
-    if (typeof redirectTo !== 'string') {
+    if (!isString(redirectTo)) {
       console.error('"redirectTo" must be a string:', redirectTo);
       throw new Error('"redirectTo" must be a string');
+    }
+    if (redirectTo[0] !== '/') {
+      console.error('"redirectTo" must start with the character "/":', redirectTo);
+      throw new Error('"redirectTo" must start with the character "/"');
     }
     return redirectTo;
   }
