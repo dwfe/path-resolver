@@ -200,13 +200,6 @@ export class Entry {
     return result;
   }
 
-  static cloneWithoutCircularDeps(entry: Entry): Entry {
-    const parent = entry.parent && Entry.cloneWithoutCircularDeps(entry.parent);
-    const clonedOrig = {...entry.orig};
-    delete clonedOrig.children;
-    return Entry.of(clonedOrig, parent);
-  }
-
   static of(orig: IEntry, parent?: Entry): Entry {
     return new Entry(orig, parent);
   }
