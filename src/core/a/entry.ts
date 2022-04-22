@@ -1,6 +1,6 @@
-import {INNER_WILDCARD_SEGMENT, WILDCARD_SEGMENT} from './util';
-import {ICustomTo, IEntry} from '../contract'
 import {cloneSimple, isNotJustObject} from '@do-while-for-each/common';
+import {INNER_WILDCARD_SEGMENT, isFunction, WILDCARD_SEGMENT} from './util';
+import {ICustomTo, IEntry} from '../contract'
 
 /**
  * The Entry is an instruction on what to do when matching for this segment of the path:
@@ -43,10 +43,6 @@ export class Entry {
 
   constructor(orig: IEntry,
               public parent?: Entry) {
-    if (!Entry.hasResult(orig)) {
-      console.error('The entry must have at least one of: component, redirectTo, customTo, action or children', orig);
-      throw new Error('The resulting field is missing. Fill one of: component, redirectTo, customTo, action or children');
-    }
     this.orig = Entry.cloneOrig(orig);
     this.path = Entry.normalizePath(this.orig, parent);
 
@@ -126,8 +122,8 @@ export class Entry {
       console.error('"customTo" must be an object:', customTo);
       throw new Error('Incorrect "customTo". It must be an object');
     }
-    if (!customTo.pathname || typeof customTo.pathname !== 'string') {
-      console.error('Incorrect "pathname"', customTo);
+    if (typeof customTo.pathname !== 'string') {
+      console.error('"pathname" must exist and be a string', customTo);
       throw new Error('Incorrect "pathname"');
     }
     if (customTo.pathname[0] !== '/') {
@@ -137,16 +133,16 @@ export class Entry {
     return cloneSimple(customTo);
   }
 
+  static normalizeChildren({children}: IEntry, parent: Entry): Entry[] | undefined {
+    return children?.map(orig => Entry.of(orig, parent));
+  }
+
   static normalizeNote(note?: any) {
     if (note === undefined)
       return;
     if (isNotJustObject(note))
       return note;
     return cloneSimple(note);
-  }
-
-  static normalizeChildren({children}: IEntry, parent: Entry): Entry[] | undefined {
-    return children?.map(orig => Entry.of(orig, parent));
   }
 
 //endregion Normalization & Validation
@@ -169,11 +165,11 @@ export class Entry {
 
   static hasResult(orig: IEntry): boolean {
     return (
-      !!orig.component ||
-      !!orig.redirectTo ||
-      !!orig.customTo ||
-      !!orig.action ||
-      !!orig.children
+      orig.component !== undefined ||
+      orig.redirectTo !== undefined ||
+      orig.customTo !== undefined ||
+      orig.action !== undefined ||
+      orig.children !== undefined
     );
   }
 
@@ -185,6 +181,22 @@ export class Entry {
     if (children)
       result.children = children.map(x => Entry.cloneOrig(x));
     result.note = Entry.normalizeNote(orig.note);
+    if (!Entry.hasResult(result)) {
+      console.error('The entry must have at least one of: component, redirectTo, customTo, action or children', orig);
+      throw new Error('The resulting field is missing. Fill one of: component, redirectTo, customTo, action or children');
+    }
+    if (result.action !== undefined && !isFunction(result.action)) {
+      console.error('"action" must be a function:', result.action);
+      throw new Error('"action" must be a function');
+    }
+    if (result.canActivate !== undefined && !isFunction(result.canActivate)) {
+      console.error('"canActivate" must be a function:', result.canActivate);
+      throw new Error('"canActivate" must be a function');
+    }
+    if (result.canDeactivate !== undefined && !isFunction(result.canDeactivate)) {
+      console.error('"canDeactivate" must be a function:', result.canDeactivate);
+      throw new Error('"canDeactivate" must be a function');
+    }
     return result;
   }
 
