@@ -12,15 +12,15 @@ describe(`path construction`, () => {
 
     new Traverse().run(flatPathResolverRoutes, (route: IRouteTest, totalCount: number) => {
       // [path] routes !== pathResolver.routes
-      expect(route.path).not.toEqual(flatRoutes[totalCount].path)
+      expect(route.segment).not.toEqual(flatRoutes[totalCount].segment)
 
       // [path] routes + init.calcPath === pathResolver.routes
       const parentRoute = flatRoutesCheck[totalCount].parentRoute
-      const parentPath = !parentRoute ? '/' : parentRoute.path
-      expect(route.path).toEqual(Init.path(flatRoutes[totalCount].path, parentPath))
+      const parentPath = !parentRoute ? '/' : parentRoute.segment
+      expect(route.segment).toEqual(Init.path(flatRoutes[totalCount].segment, parentPath))
 
       // [path] routesCheck === pathResolver.routes
-      expect(route.path).toEqual(flatRoutesCheck[totalCount].path)
+      expect(route.segment).toEqual(flatRoutesCheck[totalCount].segment)
     })
   })
 

@@ -1,14 +1,14 @@
 import {IPathnameParams} from '@do-while-for-each/common'
 import {compile, match as matcher} from 'path-to-regexp'
-import {IActionResult, IPathResolveResult, IPathResolverOpt, IRoute, TMatchResult} from './contract'
+import {IActionResult, IPathResolveResult, IPathResolverOpt, IEntry, TMatchResult} from './contract'
 import {needToMatchChildren, skipBranch} from './check'
 import {Clone} from './clone'
 import {Init} from './init'
 
 export class PathResolver {
-  routes: IRoute[] = []
+  routes: IEntry[] = []
 
-  constructor(routes: IRoute[],
+  constructor(routes: IEntry[],
               public opt: IPathResolverOpt = {isDebug: false}) {
     this.routes = routes.map(route => Init.route(route, '/'))
   }
@@ -18,20 +18,20 @@ export class PathResolver {
     return this.find(pathname, this.routes)
   }
 
-  find(pathname: string, routes?: IRoute[], parentRoute?: IRoute): undefined | IPathResolveResult {
+  find(pathname: string, routes?: IEntry[], parentRoute?: IEntry): undefined | IPathResolveResult {
     if (!routes)
       return;
 
     for (let i = 0; i < routes.length; i++) {
       let route = routes[i]
 
-      if (skipBranch(route.path, pathname)) {
-        this.log(`[x] ${route.path}, skip branch`)
+      if (skipBranch(route.segment, pathname)) {
+        this.log(`[x] ${route.segment}, skip branch`)
         continue;
       }
 
-      const match: TMatchResult = matcher<IPathnameParams>(route.path)(pathname)
-      this.log(`[${match ? 'v' : 'x'}] ${route.path}`)
+      const match: TMatchResult = matcher<IPathnameParams>(route.segment)(pathname)
+      this.log(`[${match ? 'v' : 'x'}] ${route.segment}`)
 
       if (match && !needToMatchChildren(route)) {
         route = Clone.route(route)
@@ -50,15 +50,15 @@ export class PathResolver {
     }
   }
 
-  correctResultFromAction(pathname: string, result: IActionResult, route: IRoute, parentRoute?: IRoute): void {
+  correctResultFromAction(pathname: string, result: IActionResult, route: IEntry, parentRoute?: IEntry): void {
     if (result.redirectTo === undefined && result.customTo === undefined)
       return;
 
-    const parentPath = parentRoute ? parentRoute.path : '/'
+    const parentPath = parentRoute ? parentRoute.segment : '/'
     result.redirectTo = Init.to(result.redirectTo, parentPath)
     result.customTo = Init.customTo(result.customTo, parentPath)
 
-    const match: TMatchResult = matcher<IPathnameParams>(route.path)(pathname)
+    const match: TMatchResult = matcher<IPathnameParams>(route.segment)(pathname)
     if (match) {
       const pathnameParams = match.params
       if (result.redirectTo !== undefined) {

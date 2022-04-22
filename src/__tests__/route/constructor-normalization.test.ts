@@ -1,77 +1,104 @@
 import {describe, expect} from '@jest/globals';
-import {Route} from '../../core/a/route';
+import {Entry} from '../../core/a/entry';
+import {IEntry} from '../../core/contract';
 
 //region Support
 
-export function path(parentPath: string, origPath: string, testPath?: string) {
-  const parent = parentPath !== undefined && Route.of({path: parentPath}) || undefined;
-  const route = Route.of({path: origPath}, parent);
-  expect(route.orig.path).toBe(origPath);
-  if (testPath !== undefined)
-    expect(route.path).toBe(testPath);
+// export function path(parentPath: string, origPath: string, testPath?: string) {
+//   const parent = parentPath !== undefined && Entry.of({segment: parentPath}) || undefined;
+//   const route = Entry.of({segment: origPath}, parent);
+//   expect(route.orig.segment).toBe(origPath);
+//   if (testPath !== undefined)
+//     expect(route.segment).toBe(testPath);
+// }
+//
+// export function rootPath(origPath: string, testPath?: string) {
+//   path(undefined as unknown as string, origPath, testPath);
+// }
+
+function fillRequired(orig: IEntry): void {
+  if (!Entry.hasResult(orig))
+    orig.component = 'component';
+  orig?.children?.forEach(x => fillRequired(x));
 }
 
-export function rootPath(origPath: string, testPath?: string) {
-  path(undefined as unknown as string, origPath, testPath);
+function check(orig: IEntry, test: Partial<Entry>[], fields: Array<keyof Entry>) {
+  fillRequired(orig);
+  const entry = Entry.of(orig);
+  const target = Entry.flat(entry);
+  expect(target.length).toBe(test.length);
+  for (let i = 0; i < target.length; i++) {
+    for (const field of fields) {
+      expect(target[i][field]).toBe(test[i][field]);
+    }
+  }
 }
 
+
+const arr: IEntry[] = [
+  {segment: '', component: 123},
+  {
+    segment: 'control', component: 123, children: [
+      {segment: ':user', component: 123},
+      {segment: '**', component: 123},
+    ]
+  },
+  {segment: '**', component: 123},
+]
 
 //endregion Support
 
-describe('Route.constructor, normal use', () => {
+describe('Entry.constructor, normal use', () => {
+
+  test('path, root', () => {
+    check({segment: ''}, [{path: '/'}], ['path']);
+    check({segment: 'user'}, [{path: '/user'}], ['path']);
+    check({segment: ':user'}, [{path: '/:user'}], ['path']);
+    check({segment: '**'}, [{path: '/(.*)'}], ['path']);
+  });
 
   test('path', () => {
-    expect(Route.flat(
-      Route.of({
-        path: 'control', children: [{
-          path: ':user', children: [{
-            path: '**'
-          }],
+    check({
+      segment: 'control', children: [{
+        segment: ':user', children: [{
+          segment: '**'
+        }],
+      }, {
+        segment: 'billing'
+      }, {
+        segment: 'quotas', children: [{
+          segment: 'files', children: [{
+            segment: 'downloads'
+          }, {
+            segment: 'pictures'
+          }, {
+            segment: 'documents'
+          }, {
+            segment: '**'
+          }]
         }, {
-          path: 'billing'
+          segment: 'mail'
+        }, {
+          segment: '**'
         }]
-      }) // '/control/:user'
-    )).toBe(1)
-  });
-
-  test('path', () => {
-    Route.of({path: ''}) // '/'
-    Route.of({path: 'user'}) // '/user'
-    Route.of({path: ':user'}) // '/:user'
-    Route.of({path: '**'}) // '/(.*)'
-
-    Route.of({
-      path: 'control', children: [{
-        path: 'user'
-      }]
-    }) // '/control/user'
-    Route.of({
-      path: 'control', children: [{
-        path: ':user'
-      }]
-    }) // '/control/:user'
-    Route.of({
-      path: 'control', children: [{
-        path: '**'
-      }]
-    }) // '/control/(.*)'
-
-  });
-
-  test('path', () => {
-    rootPath('', '/');
-    rootPath('user', '/user');
-    rootPath(':user', '/:user');
-    rootPath('**', '/(.*)');
-
-    path('', 'user', '/user');
-    path('', ':user', '/:user');
-    path('control', 'user', '/control/user');
-    path('control', ':user', '/control/:user');
-    path(':control', 'user', '/:control/user');
-    path(':control', ':user', '/:control/:user');
-    path('user', '**', '/user/(.*)');
-    path(':user', '**', '/:user/(.*)');
+      }, {
+        segment: '**'
+      }],
+    }, [
+      {path: '/control'},
+      {path: '/control/:user'},
+      {path: '/control/:user/(.*)'},
+      {path: '/control/billing'},
+      {path: '/control/quotas'},
+      {path: '/control/quotas/files'},
+      {path: '/control/quotas/files/downloads'},
+      {path: '/control/quotas/files/pictures'},
+      {path: '/control/quotas/files/documents'},
+      {path: '/control/quotas/files/(.*)'},
+      {path: '/control/quotas/mail'},
+      {path: '/control/quotas/(.*)'},
+      {path: '/control/(.*)'},
+    ], ['path']);
   });
 
 });

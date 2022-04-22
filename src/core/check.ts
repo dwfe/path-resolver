@@ -1,11 +1,11 @@
-import {IRoute} from './contract'
+import {IEntry} from './contract'
 
 export function checkLeadSlash(path: string): void {
   if (path[0] === '/')
     throw new Error(`Invalid configuration of route, because path [ ${path} ] cannot start with a slash`)
 }
 
-export function needToMatchChildren({redirectTo, component, children}: IRoute): boolean {
+export function needToMatchChildren({redirectTo, component, children}: IEntry): boolean {
   return redirectTo === undefined && component === undefined // if 'redirectTo' and 'component' are omitted
     && children !== undefined && children.length > 0         // but children are available
 }

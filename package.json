@@ -1,6 +1,6 @@
 {
   "name": "@do-while-for-each/path-resolver",
-  "description": "Looks for a route by path in a predefined route tree",
+  "description": "Resolving the path into some kind of expected result",
   "version": "2.0.6",
   "main": "dist/cjs/index.js",
   "types": "dist/types/index.d.ts",

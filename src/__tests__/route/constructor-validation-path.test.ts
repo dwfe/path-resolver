@@ -1,74 +1,67 @@
 import {describe} from '@jest/globals';
-import {WILDCARD_PATH} from '../../core/a/util';
-import {Route} from '../../core/a/route'
+import {WILDCARD_SEGMENT} from '../../core/a/util';
+import {Entry} from '../../core/a/entry'
 import {Throw} from '../util';
 
-describe('"path" incorrect use', () => {
+describe('"segment" incorrect use', () => {
+
+  test('segment must be a string', () => {
+    // @ts-ignore
+    Throw(() => Entry.of({segment: true}), 'The segment must be a string');
+  });
 
   test('cannot start with a slash', () => {
-    Throw(() => Route.of({path: '/'}), `Invalid route's "path" [cannot start with a slash]`);
-    Throw(() => Route.of({path: '/user'}), `Invalid route's "path" [cannot start with a slash]`);
-    Throw(() => Route.of({path: '/:user'}), `Invalid route's "path" [cannot start with a slash]`);
-    Throw(() => Route.of({
-      path: 'user', children: [{
-        path: '/info'
+    Throw(() => Entry.of({segment: '/'}), 'Invalid segment [cannot start with a slash]');
+    Throw(() => Entry.of({segment: '/user'}), 'Invalid segment [cannot start with a slash]');
+    Throw(() => Entry.of({segment: '/:user'}), 'Invalid segment [cannot start with a slash]');
+    Throw(() => Entry.of({
+      segment: 'user', children: [{
+        segment: '/info'
       }]
-    }), `Invalid route's "path" [cannot start with a slash]`);
-    Throw(() => Route.of({
-      path: ':user', children: [{
-        path: 'info', children: [{
-          path: '/job'
+    }), 'Invalid segment [cannot start with a slash]');
+    Throw(() => Entry.of({
+      segment: ':user', children: [{
+        segment: 'info', children: [{
+          segment: '/job'
         }]
       }]
-    }), `Invalid route's "path" [cannot start with a slash]`);
+    }), 'Invalid segment [cannot start with a slash]');
   });
 
   test('non-root empty', () => {
-    Throw(() => Route.of({
-      path: 'user', children: [{
-        path: ''
+    Throw(() => Entry.of({
+      segment: 'user', children: [{
+        segment: ''
       }]
-    }), `Invalid route's "path" [non-root empty]`);
-    Throw(() => Route.of({
-      path: 'user', children: [
-        {path: ''}
+    }), 'Invalid segment [non-root empty]');
+    Throw(() => Entry.of({
+      segment: 'user', children: [
+        {segment: ''}
       ]
-    }), `Invalid route's "path" [non-root empty]`);
-    Throw(() => Route.of({
-      path: ':user', children: [{
-        path: 'info', children: [{
-          path: ''
+    }), 'Invalid segment [non-root empty]');
+    Throw(() => Entry.of({
+      segment: ':user', children: [{
+        segment: 'info', children: [{
+          segment: ''
         }]
       }]
-    }), `Invalid route's "path" [non-root empty]`);
+    }), 'Invalid segment [non-root empty]');
   });
 
-  test('path "" cannot have children', () => {
-    Throw(() => Route.of({
-      path: '', children: [{
-        path: 'user'
+  test('segment "" cannot have children', () => {
+    Throw(() => Entry.of({
+      segment: '', children: [{
+        segment: 'user'
       }]
-    }), 'A route with path "" cannot have children');
-    Throw(() => Route.of({
-      path: '', children: [{
-        path: 'user', children: [{
-          path: 'info'
-        }]
-      }]
-    }), 'A route with path "" cannot have children');
-    Throw(() => Route.of({
-      path: '', children: [{
-        path: WILDCARD_PATH
-      }]
-    }), 'A route with path "" cannot have children');
+    }), 'An entry with segment "" cannot have children');
   });
 
-  test('"(.*)" incorrect wildcard', () => {
+  test('"(.*)" incorrect wildcard segment', () => {
     const wildCards = ['*', '(*)', '(.*)', '(.**)', '   *'];
     for (const wildCard of wildCards) {
-      Throw(() => Route.of({
-        path: wildCard
-      }), `Incorrect wildcard. Use "${WILDCARD_PATH}"`);
+      Throw(() => Entry.of({
+        segment: wildCard
+      }), `Incorrect wildcard. Use "${WILDCARD_SEGMENT}"`);
     }
   });
 

@@ -92,7 +92,7 @@ describe(`resolve`, () => {
   test('clone resolve', () => {
     new Traverse().run(flatPathResolverRoutes, (route: IRouteTest, totalCount: number) => {
       // [path] routesCheck === pathResolver.routes
-      expect(route.path).toEqual(flatRoutesCheck[totalCount].path)
+      expect(route.segment).toEqual(flatRoutesCheck[totalCount].segment)
 
       if (route.redirectTo === undefined) {
         expect(flatRoutesCheck[totalCount].redirectTo).toBeUndefined()

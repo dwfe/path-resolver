@@ -1,4 +1,4 @@
-Looks for a route by path in a predefined route tree.
+Resolving the path into some kind of expected result.
 
 # Installation
 
@@ -14,28 +14,32 @@ or install with yarn:
 yarn add @do-while-for-each/path-resolver
 ```
 
-# Route
+# Entry
 
-Each path to some part of your application is enclosed in a route.  
-The route is an object of the form:
+The full path to any part of your application consists of segments.  
+For example, the path: `/control/:user` – consists of segments `control` and `:user`.
 
-```
-{path, component?, redirectTo?, customTo?, action?, children?, canActivate?, canDeactivate?, note?, name?}
-```
-
-## `path`
-
-Route paths are padded with parent path values separated by a slash.
-For example, a route of the form:
+Each segment can potentially be the end point of the path. Upon reaching the end point, it is necessary to return some result. Accordingly, the segment must be associated with the instruction on how to get the result.  
+The instruction is stored in an object of type `Entry` and consists of the following fields:
 
 ```
-import {Route} from '@do-while-for-each/path-resolver';
+{segment, component?, redirectTo?, customTo?, action?, children?, canActivate?, canDeactivate?, note?, name?}
+```
 
-Route.of(
-  {path: 'control', component: <ControlPanel/> children: [
-     {path: ':user', component: <UserPanel/>}
-  ]}
-);
+here the result can be one of : `component`, `redirectTo`, `customTo`, `action`, `children`.
+
+## `segment`
+
+A segment is part of a full path. For example, an entry of the form:
+
+```
+import {Entry} from '@do-while-for-each/path-resolver';
+
+Entry.of({
+  segment: 'control', component: <ControlPanel/>, children: [
+    {segment: ':user', component: <UserPanel/>}
+  ]
+});
 ```
 
 will be able to handle paths:
@@ -45,27 +49,73 @@ will be able to handle paths:
 /control/:user => <UserPanel/>
 ```
 
-When determining paths, you can rely on the capabilities of the package [path-to-regexp](https://www.npmjs.com/package/path-to-regexp). It is this package that is used when matching requests to the `PathResolver`.
+When declaring segments, you can rely on the capabilities of the package [path-to-regexp](https://www.npmjs.com/package/path-to-regexp). It is this package that is used when matching requests to the `PathResolver`.
 
 ### Features
 
-When declaring a path, the leading slash `/` is skipped.  
-To specify the path to the index page, an empty path is used:
+#### No slash
+
+When declaring a segment, the leading slash `/` is omitted.
+
+#### Application root
+
+To specify the segment to the index page (or to something along the path `/`), an empty segment is used:
 
 ```
-{path: '', component: <IndexPage/>}
+{segment: '', component: <IndexPage/>}
 ```
 
-Also, children cannot be specified for an empty path:
+Also, children cannot be specified for an empty segment:
 
 ```
-{path: '', component: <IndexPage/>, children: [...]}  // throws an error
+{segment: '', component: <IndexPage/>, children: [...]}  // throws an error
 ```
 
-### Wildcard route
-
-A wildcard route is used to handle an attempt to navigate to a non-existent part of your application:
+This happens because `PathResolver` works with an array of entries, each of which is already a root, for example:
 
 ```
-{ path: '**', component: <NotFoundPage/> }
+import {PathResolver} from '@do-while-for-each/path-resolver';
+
+PathResolver.of([
+  {segment: '', component: <IndexPage/>},
+  {
+    segment: 'control', children: [
+      {segment: ':user', component: <UserPanel/>},
+      {segment: '**', redirectTo: '/'},
+    ]
+  },
+  {segment: '**', component: <NotFoundPage/>},
+]);
 ```
+
+will be able to handle paths:
+
+```
+/              => <IndexPage/>
+/control/:user => <UserPanel/>
+/control/**    => redirectTo: '/' => <IndexPage/>
+/**            => <NotFoundPage/>
+```
+
+#### Wildcard segment
+
+A wildcard segment is used to handle an attempt to navigate to a non-existent part of your application:
+
+```
+{ segment: '**', component: <NotFoundPage/> }
+```
+
+For example:
+
+```
+import {Entry} from '@do-while-for-each/path-resolver';
+
+Entry.of({
+  segment: 'control', component: <ControlPanel/>, children: [
+    {segment: 'billing', component: <BillingPanel/>},
+    {segment: '**', redirectTo: '/'}
+  ]
+});
+```
+
+here when navigating along the path `/control/user` will lead to a redirect to the root of the application.

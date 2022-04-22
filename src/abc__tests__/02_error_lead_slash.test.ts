@@ -7,20 +7,20 @@ describe(`error 'lead slash'`, () => {
   test('.', () => {
     expect(() => {
       new PathResolver([
-        {path: ''},
-        {path: '/hello'},
+        {segment: ''},
+        {segment: '/hello'},
       ] as IRouteTest[])
     }).toThrowError(new Error(`Invalid configuration of route, because path [ /hello ] cannot start with a slash`))
 
     expect(() => {
       new PathResolver([
         {
-          path: 'hello', children: [
-            {path: ''},
-            {path: '/world'},
+          segment: 'hello', children: [
+            {segment: ''},
+            {segment: '/world'},
           ]
         },
-        {path: 'music'},
+        {segment: 'music'},
       ] as IRouteTest[])
     }).toThrowError(new Error(`Invalid configuration of route, because path [ /world ] cannot start with a slash`))
   })

@@ -2,13 +2,13 @@ import {IPath, IPathnameParams} from '@do-while-for-each/common'
 import {MatchResult} from 'path-to-regexp';
 import {Location} from 'history'
 
-export interface ILocation<TState = any> extends Location {
-  state: TState;
+export interface ILocation extends Location {
+  state: any;
 }
 
 export interface IPathResolveResult {
-  route: IRoute;
-  parentRoute?: IRoute;
+  route: IEntry;
+  parentRoute?: IEntry;
   pathnameParams: IPathnameParams;
 }
 
@@ -16,33 +16,31 @@ export interface IPathResolverOpt {
   isDebug?: boolean;
 }
 
-export abstract class IRoute<TComponent = any, TNote = any,
-  TActionResult extends IActionResult<TComponent> = IActionResult<TComponent>,
-  TContext extends TRouteContext = TRouteContext> {
+export interface IEntry {
 
-  path!: string; // see syntax here: https://www.npmjs.com/package/path-to-regexp
+  segment: string;
 
-  component?: TComponent;
+  component?: any;
   redirectTo?: string;
   customTo?: ICustomTo;
-  action?: (data: IActionData<TNote, TContext>) => Promise<TActionResult>;
+  action?: (data: IActionData) => Promise<any>;
 
-  children?: IRoute[];
+  children?: IEntry[];
 
-  canActivate?: (data: IActionData<TNote, TContext>) => Promise<TActionResult>;
-  canDeactivate?: (tryRelocation: ILocation<TContext>, data: IActionData<TNote, TContext>) => Promise<boolean>;
+  canActivate?: (data: IActionData) => Promise<any>;
+  canDeactivate?: (tryRelocation: ILocation, data: IActionData) => Promise<boolean>;
 
-  note?: TNote;
+  note?: any;
 
   name?: string;
 }
 
-export interface IActionData<TNote = any, TContext extends TRouteContext = TRouteContext> {
+export interface IActionData {
 
   target: IActionDataTarget;
 
   route: {
-    note?: TNote;  // 'note' field defined in the route
+    note?: any;  // 'note' field defined in the route
     name?: string; // 'name' field defined in the route
   }
 
@@ -53,7 +51,7 @@ export interface IActionData<TNote = any, TContext extends TRouteContext = TRout
    *   - user follows an uncontrolled direct link (I mean, you can't set the context when you click).
    * for independent reuse of values better use 'target.search' or 'note' fields
    */
-  ctx: TContext;
+  ctx: any;
 
   /**
    * A unique string associated with this location. May be used to safely store
@@ -65,12 +63,12 @@ export interface IActionData<TNote = any, TContext extends TRouteContext = TRout
    */
   key: string;
 
-  previous?: IActionData<TNote, TContext>;
+  previous?: IActionData;
 
 }
 
-export interface IActionResult<TComponent = any> {
-  component?: TComponent;
+export interface IActionResult {
+  component?: any;
   redirectTo?: string;
   customTo?: ICustomTo;
   skip?: boolean; // if 'true' then stage 'CanActivate' will skip the processing to next stage
@@ -85,7 +83,7 @@ export interface ICustomTo extends IPath {
 }
 
 export type TRouteContext = {
-  actionData?: IActionData<TRouteContext>;
+  actionData?: IActionData;
 } | null // because history package type 'State' = object | null
 
 

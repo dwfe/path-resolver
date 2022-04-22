@@ -2,33 +2,33 @@ import {IRouteTest} from '../common/contract'
 
 export const routes: IRouteTest[] = [
   {
-    path: '', children: [
-      {path: '', component: '', note: {title: 'Index page'}},
+    segment: '', children: [
+      {segment: '', component: '', note: {title: 'Index page'}},
       {
-        path: 'books', component: '', children: [
-          {path: ':year/:genre', component: ''},
-          {path: '(.*)', redirectTo: '/auto'}
+        segment: 'books', component: '', children: [
+          {segment: ':year/:genre', component: ''},
+          {segment: '(.*)', redirectTo: '/auto'}
         ]
       }
     ]
   },
   {
-    path: 'team/:id', component: '', children: [
-      {path: 'group/:gr_id', component: ''},
-      {path: 'users', component: ''},
-      {path: 'user/:name', component: ''},
-      {path: 'hr', redirectTo: ''},
-      {path: '(.*)', customTo: {pathname: '/books/2020/comics'}}
+    segment: 'team/:id', component: '', children: [
+      {segment: 'group/:gr_id', component: ''},
+      {segment: 'users', component: ''},
+      {segment: 'user/:name', component: ''},
+      {segment: 'hr', redirectTo: ''},
+      {segment: '(.*)', customTo: {pathname: '/books/2020/comics'}}
     ]
   },
   {
-    path: 'auto', children: [
-      {path: '', component: 'z', note: {head: 'Auto'}},
-      {path: ':color', component: ''},
-      {path: 'check/redirect', customTo: {pathname: 'aqua', search: 'hello=12', hash: 'qwe'}}
+    segment: 'auto', children: [
+      {segment: '', component: 'z', note: {head: 'Auto'}},
+      {segment: ':color', component: ''},
+      {segment: 'check/redirect', customTo: {pathname: 'aqua', search: 'hello=12', hash: 'qwe'}}
     ]
   },
-  {path: ':userId', component: 'user'},
+  {segment: ':userId', component: 'user'},
 ]
 
 export const routesTotalCount = 16

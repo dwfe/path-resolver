@@ -1,5 +1,5 @@
-import {IRoute} from '../../core/contract'
+import {IEntry} from '../../core/contract'
 
-export interface IRouteTest extends IRoute {
-  parentRoute?: IRoute;
+export interface IRouteTest extends IEntry {
+  parentRoute?: IEntry;
 }
