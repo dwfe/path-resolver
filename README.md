@@ -28,6 +28,8 @@ The instruction is stored in an object of type `Entry` and consists of the follo
 
 here the result can be one of : `component`, `redirectTo`, `customTo`, `action`, `children`.
 
+So the `Entry` is an instruction on what to do when matching for this segment of the path.
+
 ## `segment`
 
 A segment is part of a full path. For example, an entry of the form:

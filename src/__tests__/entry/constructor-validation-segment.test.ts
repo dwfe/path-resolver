@@ -1,25 +1,25 @@
 import {describe} from '@jest/globals';
+import {entry, fillRequired, Throw} from '../util';
 import {WILDCARD_SEGMENT} from '../../core/a/util';
 import {Entry} from '../../core/a/entry'
-import {Throw} from '../util';
 
-describe('"segment" incorrect use', () => {
+describe('Entry.constructor, "segment" incorrect use', () => {
 
   test('segment must be a string', () => {
     // @ts-ignore
-    Throw(() => Entry.of({segment: true}), 'The segment must be a string');
+    Throw(() => Entry.of(fillRequired({segment: true})), 'The segment must be a string');
   });
 
   test('cannot start with a slash', () => {
-    Throw(() => Entry.of({segment: '/'}), 'Invalid segment [cannot start with a slash]');
-    Throw(() => Entry.of({segment: '/user'}), 'Invalid segment [cannot start with a slash]');
-    Throw(() => Entry.of({segment: '/:user'}), 'Invalid segment [cannot start with a slash]');
-    Throw(() => Entry.of({
+    Throw(() => entry({segment: '/'}), 'Invalid segment [cannot start with a slash]');
+    Throw(() => entry({segment: '/user'}), 'Invalid segment [cannot start with a slash]');
+    Throw(() => entry({segment: '/:user'}), 'Invalid segment [cannot start with a slash]');
+    Throw(() => entry({
       segment: 'user', children: [{
         segment: '/info'
       }]
     }), 'Invalid segment [cannot start with a slash]');
-    Throw(() => Entry.of({
+    Throw(() => entry({
       segment: ':user', children: [{
         segment: 'info', children: [{
           segment: '/job'
@@ -29,17 +29,17 @@ describe('"segment" incorrect use', () => {
   });
 
   test('non-root empty', () => {
-    Throw(() => Entry.of({
+    Throw(() => entry({
       segment: 'user', children: [{
         segment: ''
       }]
     }), 'Invalid segment [non-root empty]');
-    Throw(() => Entry.of({
+    Throw(() => entry({
       segment: 'user', children: [
         {segment: ''}
       ]
     }), 'Invalid segment [non-root empty]');
-    Throw(() => Entry.of({
+    Throw(() => entry({
       segment: ':user', children: [{
         segment: 'info', children: [{
           segment: ''
@@ -49,7 +49,7 @@ describe('"segment" incorrect use', () => {
   });
 
   test('segment "" cannot have children', () => {
-    Throw(() => Entry.of({
+    Throw(() => entry({
       segment: '', children: [{
         segment: 'user'
       }]
@@ -59,7 +59,7 @@ describe('"segment" incorrect use', () => {
   test('"(.*)" incorrect wildcard segment', () => {
     const wildCards = ['*', '(*)', '(.*)', '(.**)', '   *'];
     for (const wildCard of wildCards) {
-      Throw(() => Entry.of({
+      Throw(() => entry({
         segment: wildCard
       }), `Incorrect wildcard. Use "${WILDCARD_SEGMENT}"`);
     }

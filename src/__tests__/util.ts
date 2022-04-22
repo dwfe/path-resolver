@@ -1,4 +1,6 @@
 import {expect} from '@jest/globals'
+import {IEntry} from '../core/contract';
+import {Entry} from '../core/a/entry';
 
 export function Throw(fn: Function, message: string) {
   try {
@@ -13,4 +15,15 @@ export function Throw(fn: Function, message: string) {
 
 export function noThrow(fn: Function) {
   expect(fn).not.toThrow();
+}
+
+export function fillRequired(orig: IEntry): IEntry {
+  if (!Entry.hasResult(orig))
+    orig.component = 'component';
+  orig?.children?.forEach(x => fillRequired(x));
+  return orig;
+}
+
+export function entry(orig: IEntry) {
+  return Entry.of(fillRequired(orig));
 }
