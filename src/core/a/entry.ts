@@ -1,5 +1,6 @@
 import {INNER_WILDCARD_SEGMENT, WILDCARD_SEGMENT} from './util';
-import {IEntry} from '../contract'
+import {ICustomTo, IEntry} from '../contract'
+import {cloneSimple, isNotJustObject} from '@do-while-for-each/common';
 
 /**
  * The Entry is an instruction on what to do when matching for this segment of the path:
@@ -51,12 +52,12 @@ export class Entry {
 
     this.component = this.orig.component;
     this.redirectTo = this.orig.redirectTo;
-    this.customTo = this.orig.customTo && {...this.orig.customTo} || undefined;
+    this.customTo = cloneSimple(this.orig.customTo);
     this.action = this.orig.action;
 
     this.canActivate = this.orig.canActivate;
     this.canDeactivate = this.orig.canDeactivate;
-    this.note = this.orig.note && {...this.orig.note} || undefined;
+    this.note = cloneSimple(this.orig.note);
     this.name = this.orig.name;
 
     this.children = Entry.normalizeChildren(this.orig, this);
@@ -108,6 +109,42 @@ export class Entry {
     return (hasParent && parent.path || '') + '/' + segment;
   }
 
+  static normalizeRedirectTo(redirectTo?: string): string | undefined {
+    if (!redirectTo)
+      return;
+    if (typeof redirectTo !== 'string') {
+      console.error('"redirectTo" must be a string:', redirectTo);
+      throw new Error('"redirectTo" must be a string');
+    }
+    return redirectTo;
+  }
+
+  static normalizeCustomTo(customTo?: ICustomTo): ICustomTo | undefined {
+    if (customTo === undefined)
+      return;
+    if (isNotJustObject(customTo)) {
+      console.error('"customTo" must be an object:', customTo);
+      throw new Error('Incorrect "customTo". It must be an object');
+    }
+    if (!customTo.pathname || typeof customTo.pathname !== 'string') {
+      console.error('Incorrect "pathname"', customTo);
+      throw new Error('Incorrect "pathname"');
+    }
+    if (customTo.pathname[0] !== '/') {
+      console.error('"pathname" must start with "/"', customTo);
+      throw new Error('"pathname" must start with "/"');
+    }
+    return cloneSimple(customTo);
+  }
+
+  static normalizeNote(note?: any) {
+    if (note === undefined)
+      return;
+    if (isNotJustObject(note))
+      return note;
+    return cloneSimple(note);
+  }
+
   static normalizeChildren({children}: IEntry, parent: Entry): Entry[] | undefined {
     return children?.map(orig => Entry.of(orig, parent));
   }
@@ -142,11 +179,12 @@ export class Entry {
 
   static cloneOrig(orig: IEntry): IEntry {
     const result: IEntry = {...orig};
+    result.redirectTo = Entry.normalizeRedirectTo(orig.redirectTo);
+    result.customTo = Entry.normalizeCustomTo(orig.customTo);
     const {children} = orig;
-    result.customTo = orig.customTo && {...orig.customTo} || undefined;
-    result.note = orig.note && {...orig.note} || undefined;
     if (children)
       result.children = children.map(x => Entry.cloneOrig(x));
+    result.note = Entry.normalizeNote(orig.note);
     return result;
   }
 
