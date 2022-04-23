@@ -24,6 +24,17 @@ export function fillRequired(orig: IEntry): IEntry {
   return orig;
 }
 
-export function entry(orig: IEntry) {
+export function reqEntry(orig: IEntry) {
   return Entry.of(fillRequired(orig));
+}
+
+export function normCheck(orig: IEntry, test: Partial<Entry>[], fields: Array<keyof Entry>) {
+  const entry = Entry.hasResult(orig) ? Entry.of(orig) : reqEntry(orig);
+  const target = Entry.flat(entry);
+  expect(target.length).toBe(test.length);
+  for (let i = 0; i < target.length; i++) {
+    for (const field of fields) {
+      expect(target[i][field]).toBe(test[i][field]);
+    }
+  }
 }

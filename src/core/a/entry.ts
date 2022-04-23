@@ -113,8 +113,8 @@ export class Entry {
       throw new Error('"redirectTo" must be a string');
     }
     if (redirectTo[0] !== '/') {
-      console.error('"redirectTo" must start with the character "/":', redirectTo);
-      throw new Error('"redirectTo" must start with the character "/"');
+      console.error('"redirectTo" must start with the "/" character:', redirectTo);
+      throw new Error('"redirectTo" must start with the "/" character');
     }
     return redirectTo;
   }

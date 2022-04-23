@@ -1,5 +1,5 @@
 import {describe} from '@jest/globals';
-import {entry, fillRequired, Throw} from '../util';
+import {reqEntry, fillRequired, Throw} from '../util';
 import {WILDCARD_SEGMENT} from '../../core/a/util';
 import {Entry} from '../../core/a/entry'
 
@@ -11,15 +11,15 @@ describe('Entry.constructor, "segment" incorrect use', () => {
   });
 
   test('cannot start with a slash', () => {
-    Throw(() => entry({segment: '/'}), 'Invalid segment [cannot start with a slash]');
-    Throw(() => entry({segment: '/user'}), 'Invalid segment [cannot start with a slash]');
-    Throw(() => entry({segment: '/:user'}), 'Invalid segment [cannot start with a slash]');
-    Throw(() => entry({
+    Throw(() => reqEntry({segment: '/'}), 'Invalid segment [cannot start with a slash]');
+    Throw(() => reqEntry({segment: '/user'}), 'Invalid segment [cannot start with a slash]');
+    Throw(() => reqEntry({segment: '/:user'}), 'Invalid segment [cannot start with a slash]');
+    Throw(() => reqEntry({
       segment: 'user', children: [{
         segment: '/info'
       }]
     }), 'Invalid segment [cannot start with a slash]');
-    Throw(() => entry({
+    Throw(() => reqEntry({
       segment: ':user', children: [{
         segment: 'info', children: [{
           segment: '/job'
@@ -29,17 +29,17 @@ describe('Entry.constructor, "segment" incorrect use', () => {
   });
 
   test('non-root empty', () => {
-    Throw(() => entry({
+    Throw(() => reqEntry({
       segment: 'user', children: [{
         segment: ''
       }]
     }), 'Invalid segment [non-root empty]');
-    Throw(() => entry({
+    Throw(() => reqEntry({
       segment: 'user', children: [
         {segment: ''}
       ]
     }), 'Invalid segment [non-root empty]');
-    Throw(() => entry({
+    Throw(() => reqEntry({
       segment: ':user', children: [{
         segment: 'info', children: [{
           segment: ''
@@ -49,7 +49,7 @@ describe('Entry.constructor, "segment" incorrect use', () => {
   });
 
   test('segment "" cannot have children', () => {
-    Throw(() => entry({
+    Throw(() => reqEntry({
       segment: '', children: [{
         segment: 'user'
       }]
@@ -59,7 +59,7 @@ describe('Entry.constructor, "segment" incorrect use', () => {
   test('"(.*)" incorrect wildcard segment', () => {
     const wildCards = ['*', '(*)', '(.*)', '(.**)', '   *'];
     for (const wildCard of wildCards) {
-      Throw(() => entry({
+      Throw(() => reqEntry({
         segment: wildCard
       }), `Incorrect wildcard. Use "${WILDCARD_SEGMENT}"`);
     }

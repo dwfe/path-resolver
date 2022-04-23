@@ -1,6 +1,6 @@
 import {describe} from '@jest/globals';
 import {Entry} from '../../core/a/entry';
-import {entry, Throw} from '../util';
+import {reqEntry, Throw} from '../util';
 
 describe('Entry.constructor', () => {
 
@@ -15,12 +15,12 @@ describe('Entry.constructor', () => {
 
   test('"canActivate" must be a function', () => {
     // @ts-ignore
-    Throw(() => entry({segment: 'user', canActivate: null}), '"canActivate" must be a function');
+    Throw(() => reqEntry({segment: 'user', canActivate: null}), '"canActivate" must be a function');
   });
 
   test('"canDeactivate" must be a function', () => {
     // @ts-ignore
-    Throw(() => entry({segment: 'user', canDeactivate: true}), '"canDeactivate" must be a function');
+    Throw(() => reqEntry({segment: 'user', canDeactivate: true}), '"canDeactivate" must be a function');
   });
 
 

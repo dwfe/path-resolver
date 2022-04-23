@@ -135,7 +135,7 @@ For example, in the case of a router in the browser, it can be React.js componen
 
 Where to redirect.  
 String.  
-If set, it must start with the character `/`.
+If set, it must start with the `/` character.
 
 ## `customTo`
 
@@ -150,7 +150,7 @@ interface ICustomTo {
 }
 ```
 
-If set, it `pathname` must start with the character `/`.
+If set, `pathname` should start with the `/` character.
 
 ## `action`
 
