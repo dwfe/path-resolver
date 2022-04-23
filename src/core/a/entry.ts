@@ -72,6 +72,34 @@ export class Entry {
 
 //region Normalization & Validation
 
+  static cloneOrig(orig: IEntry): IEntry {
+    const result: IEntry = {...orig};
+    result.redirectTo = Entry.normalizeRedirectTo(orig.redirectTo);
+    result.customTo = Entry.normalizeCustomTo(orig.customTo);
+    const {children} = orig;
+    if (children)
+      result.children = children.map(x => Entry.cloneOrig(x));
+    result.note = Entry.normalizeNote(orig.note);
+    if (!Entry.hasResult(result)) {
+      console.error('The entry must have at least one of: component, redirectTo, customTo, action or children', orig);
+      throw new Error('The resulting field is missing. Fill one of: component, redirectTo, customTo, action or children');
+    }
+    if (result.action !== undefined && !isFunction(result.action)) {
+      console.error('"action" must be a function:', result.action);
+      throw new Error('"action" must be a function');
+    }
+    if (result.canActivate !== undefined && !isFunction(result.canActivate)) {
+      console.error('"canActivate" must be a function:', result.canActivate);
+      throw new Error('"canActivate" must be a function');
+    }
+    if (result.canDeactivate !== undefined && !isFunction(result.canDeactivate)) {
+      console.error('"canDeactivate" must be a function:', result.canDeactivate);
+      throw new Error('"canDeactivate" must be a function');
+    }
+    return result;
+  }
+
+
   static normalizePath(orig: IEntry, parent?: Entry): string {
     let {segment} = orig;
     const hasParent = !!parent;
@@ -196,33 +224,6 @@ export class Entry {
       orig.action !== undefined ||
       orig.children !== undefined
     );
-  }
-
-  static cloneOrig(orig: IEntry): IEntry {
-    const result: IEntry = {...orig};
-    result.redirectTo = Entry.normalizeRedirectTo(orig.redirectTo);
-    result.customTo = Entry.normalizeCustomTo(orig.customTo);
-    const {children} = orig;
-    if (children)
-      result.children = children.map(x => Entry.cloneOrig(x));
-    result.note = Entry.normalizeNote(orig.note);
-    if (!Entry.hasResult(result)) {
-      console.error('The entry must have at least one of: component, redirectTo, customTo, action or children', orig);
-      throw new Error('The resulting field is missing. Fill one of: component, redirectTo, customTo, action or children');
-    }
-    if (result.action !== undefined && !isFunction(result.action)) {
-      console.error('"action" must be a function:', result.action);
-      throw new Error('"action" must be a function');
-    }
-    if (result.canActivate !== undefined && !isFunction(result.canActivate)) {
-      console.error('"canActivate" must be a function:', result.canActivate);
-      throw new Error('"canActivate" must be a function');
-    }
-    if (result.canDeactivate !== undefined && !isFunction(result.canDeactivate)) {
-      console.error('"canDeactivate" must be a function:', result.canDeactivate);
-      throw new Error('"canDeactivate" must be a function');
-    }
-    return result;
   }
 
   static of(orig: IEntry, parent?: Entry): Entry {
