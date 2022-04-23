@@ -150,7 +150,9 @@ interface ICustomTo {
 }
 ```
 
-If set, `pathname` should start with the `/` character.
+If `customTo` set, `pathname` must be a string and should start with the `/` character.  
+If `search` set, it must be a string and start with the `?` character.  
+If `hash` set, it must be a string and start with the `#` character.
 
 ## `action`
 

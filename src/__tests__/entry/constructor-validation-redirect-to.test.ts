@@ -1,6 +1,6 @@
 import {describe} from '@jest/globals';
-import {Throw} from '../util';
 import {Entry} from '../../core/a/entry';
+import {Throw} from '../util';
 
 describe('Entry.constructor, redirectTo incorrect use', () => {
 

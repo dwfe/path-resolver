@@ -34,7 +34,7 @@ export function normCheck(orig: IEntry, test: Partial<Entry>[], fields: Array<ke
   expect(target.length).toBe(test.length);
   for (let i = 0; i < target.length; i++) {
     for (const field of fields) {
-      expect(target[i][field]).toBe(test[i][field]);
+      expect(target[i][field]).toStrictEqual(test[i][field]);
     }
   }
 }

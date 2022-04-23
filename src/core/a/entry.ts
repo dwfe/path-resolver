@@ -126,13 +126,34 @@ export class Entry {
       console.error('"customTo" must be an object:', customTo);
       throw new Error('Incorrect "customTo". It must be an object');
     }
-    if (typeof customTo.pathname !== 'string') {
+    const {pathname, search, hash} = customTo;
+    if (typeof pathname !== 'string') {
       console.error('"pathname" must exist and be a string', customTo);
-      throw new Error('Incorrect "pathname"');
+      throw new Error('Incorrect "pathname", must be a string');
     }
-    if (customTo.pathname[0] !== '/') {
+    if (pathname[0] !== '/') {
       console.error('"pathname" must start with "/"', customTo);
       throw new Error('"pathname" must start with "/"');
+    }
+    if (search !== undefined) {
+      if (!isString(search)) {
+        console.error('"search" must be a string', customTo);
+        throw new Error('Incorrect "search", must be a string');
+      }
+      if (search[0] !== '?') {
+        console.error('"search" must start with "?"', customTo);
+        throw new Error('"search" must start with "?"');
+      }
+    }
+    if (hash !== undefined) {
+      if (!isString(hash)) {
+        console.error('"hash" must be a string', customTo);
+        throw new Error('Incorrect "hash", must be a string');
+      }
+      if (hash[0] !== '#') {
+        console.error('"hash" must start with "#"', customTo);
+        throw new Error('"hash" must start with "#"');
+      }
     }
     return cloneSimple(customTo);
   }
