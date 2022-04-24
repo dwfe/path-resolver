@@ -1,4 +1,4 @@
-import {IEntry} from './contract'
+import {IEntry} from './a/contract'
 
 export function checkLeadSlash(path: string): void {
   if (path[0] === '/')

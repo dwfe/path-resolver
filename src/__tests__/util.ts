@@ -1,6 +1,6 @@
 import {expect} from '@jest/globals'
-import {IEntry} from '../core/contract';
 import {Entry} from '../core/a/entry';
+import {IEntry} from '../core/a/contract'
 
 export function Throw(fn: Function, message: string) {
   try {

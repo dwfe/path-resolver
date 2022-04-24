@@ -1,5 +1,5 @@
 import {describe} from '@jest/globals'
-import {ICustomTo} from '../../core/contract'
+import {ICustomTo} from '../../core/a/contract'
 import {normCheck} from '../util'
 
 describe('Entry.constructor, customTo normal use', () => {

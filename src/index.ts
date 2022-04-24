@@ -1,3 +1,5 @@
 export * from './core/contract'
 export {PathResolver} from './core/path-resolver'
 export {Entry} from './core/a/entry'
+export {ICustomTo} from './core/a/contract'
+export {IEntry} from './core/a/contract'

@@ -1,10 +1,6 @@
 import {IPath, IPathnameParams} from '@do-while-for-each/common'
 import {MatchResult} from 'path-to-regexp';
-import {Location} from 'history'
-
-export interface ILocation extends Location {
-  state: any;
-}
+import {ICustomTo, IEntry} from './a/contract'
 
 export interface IPathResolveResult {
   route: IEntry;
@@ -14,25 +10,6 @@ export interface IPathResolveResult {
 
 export interface IPathResolverOpt {
   isDebug?: boolean;
-}
-
-export interface IEntry {
-
-  segment: string;
-
-  component?: any;
-  redirectTo?: string;
-  customTo?: ICustomTo;
-  action?: (data: IActionData) => Promise<any>;
-
-  children?: IEntry[];
-
-  canActivate?: (data: IActionData) => Promise<any>;
-  canDeactivate?: (tryRelocation: ILocation, data: IActionData) => Promise<boolean>;
-
-  note?: any;
-
-  name?: string;
 }
 
 export interface IActionData {
@@ -76,10 +53,6 @@ export interface IActionResult {
 
 export interface IActionDataTarget extends IPath {
   pathnameParams: IPathnameParams;
-}
-
-export interface ICustomTo extends IPath {
-  asGoto?: boolean; // otherwise treated as a redirect
 }
 
 export type TRouteContext = {

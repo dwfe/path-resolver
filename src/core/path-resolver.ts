@@ -1,9 +1,10 @@
 import {IPathnameParams} from '@do-while-for-each/common'
 import {compile, match as matcher} from 'path-to-regexp'
-import {IActionResult, IPathResolveResult, IPathResolverOpt, IEntry, TMatchResult} from './contract'
+import {IActionResult, IPathResolveResult, IPathResolverOpt, TMatchResult} from './contract'
 import {needToMatchChildren, skipBranch} from './check'
 import {Clone} from './clone'
 import {Init} from './init'
+import {IEntry} from './a/contract'
 
 export class PathResolver {
   routes: IEntry[] = []

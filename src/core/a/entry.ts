@@ -1,6 +1,6 @@
-import {cloneSimple, isFunction, isNotJustObject, isString} from '@do-while-for-each/common';
-import {INNER_WILDCARD_SEGMENT, WILDCARD_SEGMENT} from './util';
-import {ICustomTo, IEntry} from '../contract'
+import {cloneSimple, isNotJustObject, isString} from '@do-while-for-each/common';
+import {INNER_WILDCARD_SEGMENT, WILDCARD_SEGMENT} from './cmmn';
+import {ICustomTo, IEntry} from './contract'
 
 /**
  * The Entry is an instruction on what to do when matching for this segment of the path:
@@ -83,18 +83,6 @@ export class Entry {
     if (!Entry.hasResult(result)) {
       console.error('The entry must have at least one of: component, redirectTo, customTo, action or children', orig);
       throw new Error('The resulting field is missing. Fill one of: component, redirectTo, customTo, action or children');
-    }
-    if (result.action !== undefined && !isFunction(result.action)) {
-      console.error('"action" must be a function:', result.action);
-      throw new Error('"action" must be a function');
-    }
-    if (result.canActivate !== undefined && !isFunction(result.canActivate)) {
-      console.error('"canActivate" must be a function:', result.canActivate);
-      throw new Error('"canActivate" must be a function');
-    }
-    if (result.canDeactivate !== undefined && !isFunction(result.canDeactivate)) {
-      console.error('"canDeactivate" must be a function:', result.canDeactivate);
-      throw new Error('"canDeactivate" must be a function');
     }
     return result;
   }

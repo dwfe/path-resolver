@@ -1,6 +1,7 @@
-import {ICustomTo, IEntry} from './contract'
+
 import {checkLeadSlash} from './check'
 import {Clone} from './clone'
+import {ICustomTo, IEntry} from './a/contract'
 
 export class Init {
 
