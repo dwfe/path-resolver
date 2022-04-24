@@ -32,11 +32,11 @@ export class Entry {
   component?: any;
   redirectTo?: string;
   customTo?: IEntry['customTo'];
-  action?: IEntry['action'];
+  action?: any;
   children?: Entry[];
 
-  canActivate?: IEntry['canActivate'];
-  canDeactivate?: IEntry['canDeactivate'];
+  canActivate?: any;
+  canDeactivate?: any;
 
   note?: any;
   name?: string;

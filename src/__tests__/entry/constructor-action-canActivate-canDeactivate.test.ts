@@ -6,17 +6,20 @@ describe('Entry.constructor, action, canActivate,  normal use', () => {
 
   test('"action"', () => {
     const action: IEntry['action'] = (data) => Promise.resolve();
-    reqEntry({segment: 'user', action});
+    const entry = reqEntry({segment: 'user', action});
+    expect(entry.action).toStrictEqual(action);
   });
 
   test('"canActivate"', () => {
     const canActivate: IEntry['canActivate'] = (data) => Promise.resolve();
-    reqEntry({segment: 'user', canActivate});
+    const entry = reqEntry({segment: 'user', canActivate});
+    expect(entry.canActivate).toStrictEqual(canActivate);
   });
 
   test('"canDeactivate"', () => {
     const canDeactivate: IEntry['canActivate'] = (data) => Promise.resolve(true);
-    reqEntry({segment: 'user', canDeactivate});
+    const entry = reqEntry({segment: 'user', canDeactivate});
+    expect(entry.canDeactivate).toStrictEqual(canDeactivate);
   });
 
 });
