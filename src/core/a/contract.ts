@@ -1,4 +1,6 @@
-import {IPath} from '@do-while-for-each/common'
+import {IPath, IPathnameParams} from '@do-while-for-each/common'
+
+//region Entry
 
 export interface IEntry {
 
@@ -22,3 +24,20 @@ export interface IEntry {
 export interface ICustomTo extends IPath {
   asGoto?: boolean; // otherwise treated as a redirect
 }
+
+//endregion Entry
+
+
+//region PathResolver
+
+export interface IPathResolveResult {
+  entry: IEntry;
+  parent?: IEntry;
+  pathnameParams: IPathnameParams;
+}
+
+export interface IPathResolverOpt {
+  isDebug?: boolean;
+}
+
+//endregion PathResolver

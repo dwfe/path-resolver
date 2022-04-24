@@ -60,13 +60,12 @@ export class Entry {
   }
 
 
-  clone(): Entry {
-    const clonedOrig = Entry.cloneOrig(this.orig);
-    return Entry.of(clonedOrig);
-  }
-
   flat(): Entry[] {
     return Entry.flat(this.clone());
+  }
+
+  clone(): Entry {
+    return Entry.of(this.orig);
   }
 
 

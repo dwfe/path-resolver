@@ -1,16 +1,6 @@
 import {IPath, IPathnameParams} from '@do-while-for-each/common'
 import {MatchResult} from 'path-to-regexp';
-import {ICustomTo, IEntry} from './a/contract'
-
-export interface IPathResolveResult {
-  route: IEntry;
-  parentRoute?: IEntry;
-  pathnameParams: IPathnameParams;
-}
-
-export interface IPathResolverOpt {
-  isDebug?: boolean;
-}
+import {ICustomTo} from './a/contract'
 
 export interface IActionData {
 

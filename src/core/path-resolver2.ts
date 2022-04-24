@@ -1,12 +1,12 @@
 import {IPathnameParams} from '@do-while-for-each/common'
 import {compile, match as matcher} from 'path-to-regexp'
-import {IActionResult, IPathResolveResult, IPathResolverOpt, TMatchResult} from './contract'
+import {IActionResult, TMatchResult} from './contract'
 import {needToMatchChildren, skipBranch} from './check'
 import {Clone} from './clone'
 import {Init} from './init'
-import {IEntry} from './a/contract'
+import {IEntry, IPathResolveResult, IPathResolverOpt} from './a/contract'
 
-export class PathResolver {
+export class PathResolver2 {
   routes: IEntry[] = []
 
   constructor(routes: IEntry[],
@@ -43,7 +43,7 @@ export class PathResolver {
         if (route.customTo?.pathname) {
           route.customTo.pathname = compile(route.customTo.pathname)(pathnameParams)
         }
-        return {route, parentRoute, pathnameParams}
+        return {entry: route, parent: parentRoute, pathnameParams}
       }
       const found = this.find(pathname, route.children, route)
       if (found)

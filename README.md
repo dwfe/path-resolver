@@ -154,14 +154,15 @@ If `customTo` set, `pathname` must be a string and should start with the `/` cha
 If `search` set, it must be a string and start with the `?` character.  
 If `hash` set, it must be a string and start with the `#` character.
 
-## `action`
+## `action`, `canActivate`, `canDeactivate`
+
+Most likely a Function.  
+Determined by the logic that uses the `PathResolver`.
 
 ## `children`
 
-## `canActivate`
-
-## `canDeactivate`
-
 ## `note`
+
+Some additional information.
 
 ## `name`
