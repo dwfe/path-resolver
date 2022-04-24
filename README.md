@@ -17,7 +17,7 @@ yarn add @do-while-for-each/path-resolver
 # Entry
 
 The full path to any part of your application consists of segments.  
-For example, the path: `/control/:user` – consists of segments `control` and `:user`.
+For example, the pathname: `/control/:user` – consists of segments `control` and `:user`.
 
 Each segment can potentially be the end point of the path. Upon reaching the end point, it is necessary to return some result. Accordingly, the segment must be associated with the instruction on how to get the result.  
 The instruction is stored in an object of type `Entry` and consists of the following fields:
@@ -28,11 +28,11 @@ The instruction is stored in an object of type `Entry` and consists of the follo
 
 here the result can be one of : `component`, `redirectTo`, `customTo`, `action`, `children`.
 
-So the `Entry` is an instruction on what to do when matching for this segment of the path.
+So the `Entry` is an instruction on what to do when matching for this segment of the pathname.
 
 ## `segment`
 
-A segment is part of a full path. For example, an entry of the form:
+A segment is part of a pathname. For example, an entry of the form:
 
 ```
 import {Entry} from '@do-while-for-each/path-resolver';
@@ -44,14 +44,17 @@ Entry.of({
 });
 ```
 
-will be able to handle paths:
+will be able to handle pathnames:
 
 ```
 /control       => <ControlPanel/>
 /control/:user => <UserPanel/>
 ```
 
-When declaring segments, you can rely on the capabilities of the package [path-to-regexp](https://www.npmjs.com/package/path-to-regexp). It is this package that is used when matching requests to the `PathResolver`.
+When declaring segments, you can rely on the capabilities of the package `path-to-regexp`.  
+It is this package that is used when matching/compiling requests to the `PathResolver`:
+- [match](https://github.com/pillarjs/path-to-regexp#match)
+- [compile](https://github.com/pillarjs/path-to-regexp#compile-reverse-path-to-regexp)
 
 ### Features
 
@@ -61,7 +64,7 @@ When declaring a segment, the leading slash `/` is omitted.
 
 #### Application root
 
-To specify the segment to the index page (or to something along the path `/`), an empty segment is used:
+To specify the segment to the index page (or to something along the pathname `/`), an empty segment is used:
 
 ```
 {segment: '', component: <IndexPage/>}
@@ -90,7 +93,7 @@ PathResolver.of([
 ]);
 ```
 
-will be able to handle paths:
+will be able to handle pathnames:
 
 ```
 /              => <IndexPage/>
@@ -120,7 +123,7 @@ Entry.of({
 });
 ```
 
-here when navigating along the path `/control/user` will lead to a redirect to the root of the application.
+here when navigating along the pathname `/control/user` will lead to a redirect to the root of the application.
 
 ## `component`
 
