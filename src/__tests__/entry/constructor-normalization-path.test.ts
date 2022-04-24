@@ -4,10 +4,10 @@ import {normCheck} from '../util';
 describe('Entry.constructor, "path" normal use', () => {
 
   test('path, root', () => {
-    normCheck({segment: ''}, [{path: '/', segment: ''}], ['path', 'segment']);
-    normCheck({segment: 'user'}, [{path: '/user', segment: 'user'}], ['path', 'segment']);
-    normCheck({segment: ':user'}, [{path: '/:user', segment: ':user'}], ['path', 'segment']);
-    normCheck({segment: '**'}, [{path: '/(.*)', segment: '**'}], ['path', 'segment']);
+    normCheck({segment: ''}, [{pathname: '/', segment: ''}], ['pathname', 'segment']);
+    normCheck({segment: 'user'}, [{pathname: '/user', segment: 'user'}], ['pathname', 'segment']);
+    normCheck({segment: ':user'}, [{pathname: '/:user', segment: ':user'}], ['pathname', 'segment']);
+    normCheck({segment: '**'}, [{pathname: '/(.*)', segment: '**'}], ['pathname', 'segment']);
   });
 
   test('path', () => {
@@ -38,20 +38,20 @@ describe('Entry.constructor, "path" normal use', () => {
         segment: '**', component: ''
       }],
     }, [
-      {path: '/control', segment: 'control'},
-      {path: '/control/:user', segment: ':user'},
-      {path: '/control/:user/(.*)', segment: '**'},
-      {path: '/control/billing', segment: 'billing'},
-      {path: '/control/quotas', segment: 'quotas'},
-      {path: '/control/quotas/files', segment: 'files'},
-      {path: '/control/quotas/files/downloads', segment: 'downloads'},
-      {path: '/control/quotas/files/pictures', segment: 'pictures'},
-      {path: '/control/quotas/files/documents', segment: 'documents'},
-      {path: '/control/quotas/files/(.*)', segment: '**'},
-      {path: '/control/quotas/mail', segment: 'mail'},
-      {path: '/control/quotas/(.*)', segment: '**'},
-      {path: '/control/(.*)', segment: '**'},
-    ], ['path', 'segment']);
+      {pathname: '/control', segment: 'control'},
+      {pathname: '/control/:user', segment: ':user'},
+      {pathname: '/control/:user/(.*)', segment: '**'},
+      {pathname: '/control/billing', segment: 'billing'},
+      {pathname: '/control/quotas', segment: 'quotas'},
+      {pathname: '/control/quotas/files', segment: 'files'},
+      {pathname: '/control/quotas/files/downloads', segment: 'downloads'},
+      {pathname: '/control/quotas/files/pictures', segment: 'pictures'},
+      {pathname: '/control/quotas/files/documents', segment: 'documents'},
+      {pathname: '/control/quotas/files/(.*)', segment: '**'},
+      {pathname: '/control/quotas/mail', segment: 'mail'},
+      {pathname: '/control/quotas/(.*)', segment: '**'},
+      {pathname: '/control/(.*)', segment: '**'},
+    ], ['pathname', 'segment']);
   });
 
 });

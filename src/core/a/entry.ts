@@ -3,7 +3,7 @@ import {INNER_WILDCARD_SEGMENT, WILDCARD_SEGMENT} from './cmmn';
 import {ICustomTo, IEntry} from './contract'
 
 /**
- * The Entry is an instruction on what to do when matching for this segment of the path:
+ * The Entry is an instruction on what to do when matching for this segment of the pathname:
  *
  *   {
  *     segment,
@@ -24,8 +24,8 @@ export class Entry {
 
   orig: IEntry; // data that comes from PathResolver
 
-  path!: string; // full path, e.g. "/control/:user"
-  get segment(): string { // segment of the full path, e.g.: ":user"
+  pathname!: string; // e.g. "/control/:user"
+  get segment(): string { // segment of the pathname, e.g.: ":user"
     return this.orig.segment;
   }
 
@@ -44,7 +44,7 @@ export class Entry {
   constructor(orig: IEntry,
               public parent?: Entry) {
     this.orig = Entry.cloneOrig(orig);
-    this.path = Entry.normalizePath(this.orig, parent);
+    this.pathname = Entry.normalizePathname(this.orig, parent);
 
     this.component = this.orig.component;
     this.redirectTo = this.orig.redirectTo;
@@ -87,7 +87,7 @@ export class Entry {
   }
 
 
-  static normalizePath(orig: IEntry, parent?: Entry): string {
+  static normalizePathname(orig: IEntry, parent?: Entry): string {
     let {segment} = orig;
     const hasParent = !!parent;
     if (!isString(segment)) {
@@ -117,7 +117,7 @@ export class Entry {
         segment = INNER_WILDCARD_SEGMENT;
         break;
     }
-    return (hasParent && parent.path || '') + '/' + segment;
+    return (hasParent && parent.pathname || '') + '/' + segment;
   }
 
   static normalizeRedirectTo(redirectTo?: string): string | undefined {

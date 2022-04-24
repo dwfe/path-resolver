@@ -1,5 +1,4 @@
 import {IPath, IPathnameParams} from '@do-while-for-each/common'
-import {MatchResult} from 'path-to-regexp';
 import {ICustomTo} from './a/contract'
 
 export interface IActionData {
@@ -50,4 +49,3 @@ export type TRouteContext = {
 } | null // because history package type 'State' = object | null
 
 
-export type TMatchResult = MatchResult<IPathnameParams> | false;

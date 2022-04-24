@@ -1,4 +1,5 @@
 import {IPath, IPathnameParams} from '@do-while-for-each/common'
+import {MatchResult} from 'path-to-regexp'
 
 //region Entry
 
@@ -35,6 +36,8 @@ export interface IPathResolveResult {
   parent?: IEntry;
   pathnameParams: IPathnameParams;
 }
+
+export type TMatchResult = MatchResult<IPathnameParams> | false;
 
 export interface IPathResolverOpt {
   isDebug?: boolean;
