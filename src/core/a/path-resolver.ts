@@ -1,4 +1,6 @@
-import {IEntry, IPathResolveResult, IPathResolverOpt, TMatchResult} from './contract'
+import {IPathnameParams} from '@do-while-for-each/common';
+import {Match} from 'path-to-regexp';
+import {IEntry, IPathResolveResult, IPathResolverOpt} from './contract'
 import {Entry} from './entry'
 
 export class PathResolver {
@@ -27,7 +29,7 @@ export class PathResolver {
       //   continue;
       // }
 
-      const match: TMatchResult = entry.transformFn(pathname);
+      const match: Match<IPathnameParams> = entry.transformFn(pathname);
       this.log(`[${match ? 'v' : 'x'}] ${entry.pathTemplate}`);
 
       if (match && entry.hasResult && !entry.resultIsChildren) {
