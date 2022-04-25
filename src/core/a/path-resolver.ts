@@ -1,5 +1,3 @@
-import {IPathnameParams} from '@do-while-for-each/common'
-import {match as matcher} from 'path-to-regexp'
 import {IEntry, IPathResolveResult, IPathResolverOpt, TMatchResult} from './contract'
 import {Entry} from './entry'
 
@@ -9,7 +7,7 @@ export class PathResolver {
 
   constructor(entries: IEntry[],
               public opt: IPathResolverOpt = {isDebug: false}) {
-    this.entries = entries.map(x => Entry.of(x));
+    this.entries = entries.map(x => Entry.of(Entry.cloneOrig(x)));
   }
 
   resolve(pathname: string): IPathResolveResult | undefined {
@@ -29,9 +27,15 @@ export class PathResolver {
       //   continue;
       // }
 
-      const match: TMatchResult = matcher<IPathnameParams>(entry.pathname)(pathname)
-      this.log(`[${match ? 'v' : 'x'}] ${entry.pathname}`)
+      const match: TMatchResult = entry.transformFn(pathname);
+      this.log(`[${match ? 'v' : 'x'}] ${entry.pathTemplate}`);
 
+      if (match && entry.hasResult && !entry.resultIsChildren) {
+        return {entry: entry.clone(), pathnameParams: match.params};
+      }
+      const found = this.find(pathname, entry.children);
+      if (found)
+        return found;
     }
   }
 

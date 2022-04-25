@@ -1,5 +1,6 @@
 import {IPath, IPathnameParams} from '@do-while-for-each/common'
 import {MatchResult} from 'path-to-regexp'
+import {Entry} from './entry';
 
 //region Entry
 
@@ -31,16 +32,16 @@ export interface ICustomTo extends IPath {
 
 //region PathResolver
 
+export interface IPathResolverOpt {
+  isDebug?: boolean;
+}
+
 export interface IPathResolveResult {
-  entry: IEntry;
-  parent?: IEntry;
+  entry: Entry;
   pathnameParams: IPathnameParams;
 }
 
 export type TMatchResult = MatchResult<IPathnameParams> | false;
 
-export interface IPathResolverOpt {
-  isDebug?: boolean;
-}
 
 //endregion PathResolver

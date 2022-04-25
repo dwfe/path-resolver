@@ -4,10 +4,10 @@ import {normCheck} from '../util';
 describe('Entry.constructor, "path" normal use', () => {
 
   test('path, root', () => {
-    normCheck({segment: ''}, [{pathname: '/', segment: ''}], ['pathname', 'segment']);
-    normCheck({segment: 'user'}, [{pathname: '/user', segment: 'user'}], ['pathname', 'segment']);
-    normCheck({segment: ':user'}, [{pathname: '/:user', segment: ':user'}], ['pathname', 'segment']);
-    normCheck({segment: '**'}, [{pathname: '/(.*)', segment: '**'}], ['pathname', 'segment']);
+    normCheck({segment: ''}, [{pathTemplate: '/', segment: ''}], ['pathTemplate', 'segment']);
+    normCheck({segment: 'user'}, [{pathTemplate: '/user', segment: 'user'}], ['pathTemplate', 'segment']);
+    normCheck({segment: ':user'}, [{pathTemplate: '/:user', segment: ':user'}], ['pathTemplate', 'segment']);
+    normCheck({segment: '**'}, [{pathTemplate: '/(.*)', segment: '**'}], ['pathTemplate', 'segment']);
   });
 
   test('path', () => {
@@ -38,20 +38,20 @@ describe('Entry.constructor, "path" normal use', () => {
         segment: '**', component: ''
       }],
     }, [
-      {pathname: '/control', segment: 'control'},
-      {pathname: '/control/:user', segment: ':user'},
-      {pathname: '/control/:user/(.*)', segment: '**'},
-      {pathname: '/control/billing', segment: 'billing'},
-      {pathname: '/control/quotas', segment: 'quotas'},
-      {pathname: '/control/quotas/files', segment: 'files'},
-      {pathname: '/control/quotas/files/downloads', segment: 'downloads'},
-      {pathname: '/control/quotas/files/pictures', segment: 'pictures'},
-      {pathname: '/control/quotas/files/documents', segment: 'documents'},
-      {pathname: '/control/quotas/files/(.*)', segment: '**'},
-      {pathname: '/control/quotas/mail', segment: 'mail'},
-      {pathname: '/control/quotas/(.*)', segment: '**'},
-      {pathname: '/control/(.*)', segment: '**'},
-    ], ['pathname', 'segment']);
+      {pathTemplate: '/control', segment: 'control'},
+      {pathTemplate: '/control/:user', segment: ':user'},
+      {pathTemplate: '/control/:user/(.*)', segment: '**'},
+      {pathTemplate: '/control/billing', segment: 'billing'},
+      {pathTemplate: '/control/quotas', segment: 'quotas'},
+      {pathTemplate: '/control/quotas/files', segment: 'files'},
+      {pathTemplate: '/control/quotas/files/downloads', segment: 'downloads'},
+      {pathTemplate: '/control/quotas/files/pictures', segment: 'pictures'},
+      {pathTemplate: '/control/quotas/files/documents', segment: 'documents'},
+      {pathTemplate: '/control/quotas/files/(.*)', segment: '**'},
+      {pathTemplate: '/control/quotas/mail', segment: 'mail'},
+      {pathTemplate: '/control/quotas/(.*)', segment: '**'},
+      {pathTemplate: '/control/(.*)', segment: '**'},
+    ], ['pathTemplate', 'segment']);
   });
 
 });

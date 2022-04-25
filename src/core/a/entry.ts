@@ -1,4 +1,5 @@
-import {cloneSimple, isNotJustObject, isString} from '@do-while-for-each/common';
+import {cloneSimple, IPathnameParams, isJustObject, isNotJustObject, isString} from '@do-while-for-each/common';
+import {match, MatchFunction} from 'path-to-regexp';
 import {INNER_WILDCARD_SEGMENT, WILDCARD_SEGMENT} from './cmmn';
 import {ICustomTo, IEntry} from './contract'
 
@@ -22,9 +23,7 @@ import {ICustomTo, IEntry} from './contract'
  */
 export class Entry {
 
-  orig: IEntry; // data that comes from PathResolver
-
-  pathname!: string; // e.g. "/control/:user"
+  pathTemplate!: string; // e.g. "/control/:user"
   get segment(): string { // segment of the pathname, e.g.: ":user"
     return this.orig.segment;
   }
@@ -41,53 +40,75 @@ export class Entry {
   note?: any;
   name?: string;
 
-  constructor(orig: IEntry,
+  hasResult: boolean;
+  resultIsChildren: boolean;
+  transformFn: MatchFunction<IPathnameParams>; // https://github.com/pillarjs/path-to-regexp#match
+
+  constructor(public orig: IEntry,
               public parent?: Entry) {
-    this.orig = Entry.cloneOrig(orig);
-    this.pathname = Entry.normalizePathname(this.orig, parent);
+    this.pathTemplate = Entry.normalizePathTemplate(this.orig, parent);
 
     this.component = this.orig.component;
-    this.redirectTo = this.orig.redirectTo;
-    this.customTo = cloneSimple(this.orig.customTo);
+    this.redirectTo = Entry.normalizeRedirectTo(this.orig.redirectTo);
+    this.customTo = Entry.normalizeCustomTo(this.orig.customTo);
     this.action = this.orig.action;
 
     this.canActivate = this.orig.canActivate;
     this.canDeactivate = this.orig.canDeactivate;
-    this.note = cloneSimple(this.orig.note);
+    this.note = Entry.normalizeNote(this.orig.note);
     this.name = this.orig.name;
 
     this.children = Entry.normalizeChildren(this.orig, this);
+
+    this.hasResult = Entry.hasResult(this.orig);
+    if (!this.hasResult) {
+      console.error('The entry must have at least one of: component, redirectTo, customTo, action or children', this.orig);
+      throw new Error('The resulting field is missing. Fill one of: component, redirectTo, customTo, action or children');
+    }
+    this.resultIsChildren = Entry.resultIsChildren(this.orig);
+    this.transformFn = match<IPathnameParams>(this.pathTemplate, {decode: decodeURIComponent});
   }
 
 
   flat(): Entry[] {
-    return Entry.flat(this.clone());
+    return Entry.flat(this.cloneFull());
   }
 
   clone(): Entry {
-    return Entry.of(this.orig);
+    let parent: Entry | undefined;
+    if (this.parent) {
+      const parentOrig = Entry.cloneOrig(this.parent.orig, {skipChildren: true});
+      parent = Entry.of(parentOrig);
+      parent.pathTemplate = this.parent.pathTemplate;
+    }
+    const orig = Entry.cloneOrig(this.orig, {skipChildren: true});
+    const cloned = Entry.of(orig, parent);
+    cloned.pathTemplate = this.pathTemplate;
+    return cloned;
+  }
+
+  cloneFull(): Entry {
+    return Entry.of(
+      Entry.cloneOrig(this.orig),
+      this.parent
+    );
   }
 
 
 //region Normalization & Validation
 
-  static cloneOrig(orig: IEntry): IEntry {
+  static cloneOrig(orig: IEntry, {skipChildren} = {skipChildren: false}): IEntry {
     const result: IEntry = {...orig};
-    result.redirectTo = Entry.normalizeRedirectTo(orig.redirectTo);
-    result.customTo = Entry.normalizeCustomTo(orig.customTo);
-    const {children} = orig;
-    if (children)
-      result.children = children.map(x => Entry.cloneOrig(x));
-    result.note = Entry.normalizeNote(orig.note);
-    if (!Entry.hasResult(result)) {
-      console.error('The entry must have at least one of: component, redirectTo, customTo, action or children', orig);
-      throw new Error('The resulting field is missing. Fill one of: component, redirectTo, customTo, action or children');
+    result.customTo = isJustObject(orig.customTo) && {...orig.customTo} || orig.customTo;
+    if (orig.children && !skipChildren) {
+      result.children = orig.children.map(x => Entry.cloneOrig(x));
     }
+    result.note = isJustObject(orig.note) && {...orig.note} || orig.note;
     return result;
   }
 
 
-  static normalizePathname(orig: IEntry, parent?: Entry): string {
+  static normalizePathTemplate(orig: IEntry, parent?: Entry): string {
     let {segment} = orig;
     const hasParent = !!parent;
     if (!isString(segment)) {
@@ -117,7 +138,7 @@ export class Entry {
         segment = INNER_WILDCARD_SEGMENT;
         break;
     }
-    return (hasParent && parent.pathname || '') + '/' + segment;
+    return (hasParent && parent.pathTemplate || '') + '/' + segment;
   }
 
   static normalizeRedirectTo(redirectTo?: string): string | undefined {
@@ -170,11 +191,11 @@ export class Entry {
         throw new Error('"hash" must start with "#"');
       }
     }
-    return cloneSimple(customTo);
+    return {...customTo};
   }
 
   static normalizeChildren({children}: IEntry, parent: Entry): Entry[] | undefined {
-    return children?.map(orig => Entry.of(orig, parent));
+    return children?.map(orig => Entry.of(Entry.cloneOrig(orig), parent));
   }
 
   static normalizeNote(note?: any) {
@@ -210,6 +231,18 @@ export class Entry {
       orig.customTo !== undefined ||
       orig.action !== undefined ||
       orig.children !== undefined
+    );
+  }
+
+  static resultIsChildren(orig: IEntry): boolean {
+    if (!Entry.hasResult(orig))
+      return false;
+    return (
+      orig.children !== undefined &&
+      orig.component === undefined &&
+      orig.redirectTo === undefined &&
+      orig.customTo === undefined &&
+      orig.action === undefined
     );
   }
 

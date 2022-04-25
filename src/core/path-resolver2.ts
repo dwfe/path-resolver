@@ -5,6 +5,7 @@ import {needToMatchChildren, skipBranch} from './check'
 import {Clone} from './clone'
 import {Init} from './init'
 import {IEntry, IPathResolveResult, IPathResolverOpt, TMatchResult} from './a/contract'
+import {Entry} from './a/entry';
 
 export class PathResolver2 {
   routes: IEntry[] = []
@@ -19,7 +20,7 @@ export class PathResolver2 {
     return this.find(pathname, this.routes)
   }
 
-  find(pathname: string, routes?: IEntry[], parentRoute?: IEntry): undefined | IPathResolveResult {
+  find(pathname: string, routes?: IEntry[]): undefined | IPathResolveResult {
     if (!routes)
       return;
 
@@ -43,9 +44,9 @@ export class PathResolver2 {
         if (route.customTo?.pathname) {
           route.customTo.pathname = compile(route.customTo.pathname)(pathnameParams)
         }
-        return {entry: route, parent: parentRoute, pathnameParams}
+        return {entry: route as Entry, pathnameParams}
       }
-      const found = this.find(pathname, route.children, route)
+      const found = this.find(pathname, route.children)
       if (found)
         return found
     }

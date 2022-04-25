@@ -53,8 +53,8 @@ will be able to handle pathnames:
 
 When declaring segments, you can rely on the capabilities of the package `path-to-regexp`.  
 It is this package that is used when matching/compiling requests to the `PathResolver`:
+
 - [match](https://github.com/pillarjs/path-to-regexp#match)
-- [compile](https://github.com/pillarjs/path-to-regexp#compile-reverse-path-to-regexp)
 
 ### Features
 
