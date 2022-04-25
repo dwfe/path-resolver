@@ -159,7 +159,8 @@ If `hash` set, it must be a string and start with the `#` character.
 ## `action`, `canActivate`, `canDeactivate`
 
 Most likely a Function.  
-Determined by the logic that uses the `PathResolver`.
+Determined by the external code that uses the `PathResolver`.  
+This external code will at some point call the function that was passed.
 
 ## `children`
 
