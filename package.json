@@ -11,12 +11,9 @@
     "url": "git@github.com:dwfe/path-resolver.git"
   },
   "keywords": [
-    "path resolver",
-    "path",
+    "path-resolver",
     "pathname",
-    "search",
-    "tree",
-    "route"
+    "routing"
   ],
   "author": "Do|While|For|Each",
   "license": "MIT",
