@@ -51,8 +51,7 @@ will be able to handle pathnames:
 /control/:user => <UserPanel/>
 ```
 
-When declaring segments, you can rely on the capabilities of the package `path-to-regexp`.  
-It is this package that is used when matching/compiling requests to the `PathResolver`:
+When declaring segments, you can rely on the capabilities of the package `path-to-regexp`, see:
 
 - [match](https://github.com/pillarjs/path-to-regexp#match)
 
