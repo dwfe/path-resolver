@@ -24,6 +24,7 @@ import {ICustomTo, IEntry} from './contract'
 export class Entry {
 
   pathTemplate!: string; // e.g. "/control/:user"
+  transformFn: MatchFunction<IPathnameParams>; // https://github.com/pillarjs/path-to-regexp#match
   get segment(): string { // segment of the pathname, e.g.: ":user"
     return this.orig.segment;
   }
@@ -42,11 +43,18 @@ export class Entry {
 
   hasResult: boolean;
   resultIsChildren: boolean;
-  transformFn: MatchFunction<IPathnameParams>; // https://github.com/pillarjs/path-to-regexp#match
 
   constructor(public orig: IEntry,
               public parent?: Entry) {
+    this.hasResult = Entry.hasResult(this.orig);
+    if (!this.hasResult) {
+      console.error('The entry must have at least one of: component, redirectTo, customTo, action or children', this.orig);
+      throw new Error('The resulting field is missing. Fill one of: component, redirectTo, customTo, action or children');
+    }
+    this.resultIsChildren = Entry.resultIsChildren(this.orig);
+
     this.pathTemplate = Entry.normalizePathTemplate(this.orig, parent);
+    this.transformFn = match<IPathnameParams>(this.pathTemplate, {decode: decodeURIComponent});
 
     this.component = this.orig.component;
     this.redirectTo = Entry.normalizeRedirectTo(this.orig.redirectTo);
@@ -59,14 +67,6 @@ export class Entry {
     this.name = this.orig.name;
 
     this.children = Entry.normalizeChildren(this.orig, this);
-
-    this.hasResult = Entry.hasResult(this.orig);
-    if (!this.hasResult) {
-      console.error('The entry must have at least one of: component, redirectTo, customTo, action or children', this.orig);
-      throw new Error('The resulting field is missing. Fill one of: component, redirectTo, customTo, action or children');
-    }
-    this.resultIsChildren = Entry.resultIsChildren(this.orig);
-    this.transformFn = match<IPathnameParams>(this.pathTemplate, {decode: decodeURIComponent});
   }
 
 
