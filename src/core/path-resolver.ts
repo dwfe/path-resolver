@@ -1,6 +1,6 @@
 import {IPathnameParams} from '@do-while-for-each/common';
 import {Match} from 'path-to-regexp';
-import {IEntry, IFound, IPathResolveResult, IPathResolverOpt} from './contract'
+import {IEntry, IFindReq, IFound, IPathResolveResult, IPathResolverOpt} from './contract'
 import {Entry} from './entry'
 
 export class PathResolver {
@@ -20,8 +20,15 @@ export class PathResolver {
     if (pathname.length > 1 && pathname.endsWith('/')) {
       pathname = pathname.slice(0, -1); // remove the final slash
     }
-    this.log(`resolving '${pathname}'`)
-    const found = this.find(pathname, this.entries);
+    const segments = pathname.split('/').slice(1);
+    const req: IFindReq = {
+      pathname,
+      segments,
+      maxLevel: segments.length - 1,
+    };
+
+    this.log(`resolving '${pathname}'`);
+    const found = this.find(req, 0, this.entries);
     if (found)
       return {
         target: {
@@ -33,25 +40,28 @@ export class PathResolver {
       };
   }
 
-  find(pathname: string, entries?: Entry[]): IFound | undefined {
+  find(req: IFindReq, level: number, entries?: Entry[]): IFound | undefined {
     if (!entries)
       return;
 
     for (let i = 0; i < entries.length; i++) {
       const entry = entries[i];
 
-      if (entry.parent === undefined && entry.skip(pathname)) {
-        this.log(` [x] ${entry.pathTemplate}, skip branch`)
+      if (entry.isSimpleSegment && req.segments[level] !== entry.segment) {
+        this.logSkip('!= segment', entry.pathTemplate);
         continue;
       }
 
-      const match: Match<IPathnameParams> = entry.transformFn(pathname);
-      this.log(` [${match ? 'v' : 'x'}] ${entry.pathTemplate}`);
+      if (level === req.maxLevel || entry.isWildcard) {
+        const match = entry.transformFn(req.pathname);
+        this.logMatch(match, entry.pathTemplate);
 
-      if (match && entry.hasResult && !entry.resultIsChildren) {
-        return {entry, match};
-      }
-      const found = this.find(pathname, entry.children);
+        if (match && entry.hasResult && !entry.resultIsChildren)
+          return {entry, match};
+      } else
+        this.logSkip('no-check', entry.pathTemplate);
+
+      const found = this.find(req, level + 1, entry.children);
       if (found)
         return found;
     }
@@ -67,9 +77,23 @@ export class PathResolver {
   }
 
 
+//region Support
+
+  private logSkip(reason: string, pathTemplate: string) {
+    if (this.opt.isDebug)
+      console.log(` [x] ${pathTemplate}, ${reason}`);
+  }
+
+  private logMatch(match: Match<IPathnameParams>, pathTemplate: string) {
+    if (this.opt.isDebug)
+      console.log(` [${match ? 'v' : 'x'}] ${pathTemplate}`);
+  }
+
   private log(data: string) {
     if (this.opt.isDebug)
-      console.log(' ', data)
+      console.log(data)
   }
+
+//endregion Support
 
 }

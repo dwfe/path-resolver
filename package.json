@@ -12,8 +12,7 @@
   },
   "keywords": [
     "path-resolver",
-    "pathname",
-    "routing"
+    "pathname"
   ],
   "author": "Do|While|For|Each",
   "license": "MIT",

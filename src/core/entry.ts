@@ -29,7 +29,9 @@ export class Entry {
     return this.orig.segment;
   }
 
-  segmentStartWith: string | undefined;
+  isWildcard: boolean; // if segment === '**'
+  isParam: boolean // if segment start with ':', e.g. ':user'
+  isSimpleSegment: boolean; // !isWildcard && !isParam
 
   component?: any;
   redirectTo?: string;
@@ -58,7 +60,10 @@ export class Entry {
       throw new Error('Only one of the following can be specified at a time: component, redirectTo, customTo or action');
     }
     this.resultIsChildren = Entry.resultIsChildren(this.orig);
-    this.segmentStartWith = this.segment[0];
+
+    this.isWildcard = this.segment === WILDCARD_SEGMENT;
+    this.isParam = this.segment[0] === ':';
+    this.isSimpleSegment = !this.isWildcard && !this.isParam;
 
     this.pathTemplate = Entry.normalizePathTemplate(this.orig, parent);
     this.transformFn = match<IPathnameParams>(this.pathTemplate, {decode: decodeURIComponent});
@@ -100,18 +105,6 @@ export class Entry {
       this.parent
     );
   }
-
-  skip(pathname: string): boolean {
-    switch (this.segmentStartWith) {
-      case undefined:
-      case ':':
-      case '(':
-        return false; // can't check -> go inside branch
-    }
-    const checkFirst = pathname.split('/')[1];
-    return this.segment !== checkFirst;
-  }
-
 
 //region Normalization & Validation
 

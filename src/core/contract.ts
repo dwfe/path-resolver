@@ -36,9 +36,15 @@ export interface IPathResolverOpt {
   isDebug?: boolean;
 }
 
-export interface IPattern {
+export interface IFindReq {
   pathname: string;
   segments: string[];
+  maxLevel: number;
+}
+
+export interface IFound {
+  entry: Entry;
+  match: MatchResult<IPathnameParams>;
 }
 
 export interface IPathResolveResult {
@@ -48,11 +54,6 @@ export interface IPathResolveResult {
     pathnameParams: IPathnameParams;
   },
   canActivateArr: Entry[];
-}
-
-export interface IFound {
-  entry: Entry;
-  match: MatchResult<IPathnameParams>;
 }
 
 //endregion PathResolver

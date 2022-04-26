@@ -33,7 +33,8 @@ const pr = new PathResolver([
       {segment: 'to-red', customTo: {pathname: '/auto/red', search: '?ford=focus', hash: '#table'}},
       {segment: ':color', component: '<auto-color/>'},
       {segment: '**', redirectTo: '/'}]},
-  {segment: '**', component: '<not-found>'}
+  {segment: ':slide', component: '<slide/>'},
+  {segment: '**', component: '<not-found/>'}
 ], {isDebug: true});
 // @formatter:on
 
@@ -42,24 +43,49 @@ const pr = new PathResolver([
 describe('PathResolver, resolve', () => {
 
   test('component', () => {
-    let {target, canActivateArr} = pr.resolve('/auto/toyota') as IPathResolveResult;
+    let {target, canActivateArr} = pr.resolve('/') as IPathResolveResult;
     expect(canActivateArr.length).toBe(0);
     let {entry, pathname, pathnameParams} = target;
-    expect(entry.component).toBe('<auto-color/>');
-    expect(pathname).toBe('/auto/toyota');
-    expect(pathnameParams).toEqual({'color': 'toyota'});
-    ifComponentChecks(entry);
-
-    ({target, canActivateArr} = pr.resolve('/') as IPathResolveResult);
-    expect(canActivateArr.length).toBe(0);
-    ({entry} = target);
     expect(entry.component).toBe('<index-page/>');
+    ifComponentChecks(entry);
 
     ({target, canActivateArr} = pr.resolve('/control/quotas/files/pictures') as IPathResolveResult);
     expect(canActivateArr.length).toBe(1);
     ({entry} = target);
     expect(entry.component).toBe('<quotas-files-pictures/>');
+    ifComponentChecks(entry);
 
+    ({target, canActivateArr} = pr.resolve('/control/77/achievement-list') as IPathResolveResult);
+    expect(canActivateArr.length).toBe(2);
+    ({entry} = target);
+    expect(entry.component).toBe('<ctrl-user-achievement-list/>');
+    ifComponentChecks(entry);
+
+    ({target, canActivateArr} = pr.resolve('/control/77/hello/world') as IPathResolveResult);
+    expect(canActivateArr.length).toBe(2);
+    ({entry} = target);
+    expect(entry.component).toBe('<ctrl-user-unknown-page/>');
+    ifComponentChecks(entry);
+
+    ({target, canActivateArr} = pr.resolve('/auto/toyota') as IPathResolveResult);
+    expect(canActivateArr.length).toBe(0);
+    ({entry, pathname, pathnameParams} = target);
+    expect(entry.component).toBe('<auto-color/>');
+    expect(pathname).toBe('/auto/toyota');
+    expect(pathnameParams).toEqual({'color': 'toyota'});
+    ifComponentChecks(entry);
+
+    ({target, canActivateArr} = pr.resolve('/hY7654dFo') as IPathResolveResult);
+    expect(canActivateArr.length).toBe(0);
+    ({entry} = target);
+    expect(entry.component).toBe('<slide/>');
+    ifComponentChecks(entry);
+
+    ({target, canActivateArr} = pr.resolve('/unknown/path') as IPathResolveResult);
+    expect(canActivateArr.length).toBe(0);
+    ({entry} = target);
+    expect(entry.component).toBe('<not-found/>');
+    ifComponentChecks(entry);
   });
 
   test('redirectTo', () => {
