@@ -1,55 +1,144 @@
 import {describe} from '@jest/globals';
-import {IPathResolveResult} from '../../core/a/contract'
-import {PathResolver} from '../../core/a/path-resolver';
+import * as console2 from 'console';
+import {IPathResolveResult} from '../../core/contract'
+import {PathResolver} from '../../core/path-resolver';
+import {Entry} from '../../core/entry';
 
-describe('PathResolver, resolve', () => {
+//region Support
 
-  test('resolve', () => {
+global.console = console2;
 
-    const action = () => console.log('action');
-    const canActivate = () => console.log('canActivate');
-    const canDeactivate = () => console.log('canDeactivate');
+const action = () => console.log('action');
+const canActivateControl = () => console.log('canActivate "/control"');
+const canActivateControlUser = () => console.log('canActivate "/control/:user"');
+const canDeactivate = () => console.log('canDeactivate');
 
 // @formatter:off
-    const pr = new PathResolver([
-      {segment: '', component: '<index-page/>'},
-      {segment: 'control', component: '<control/>', canActivate, children: [
-        {segment: 'quotas', component: '<ctrl-quotas/>', children: [
-          {segment: 'files', canDeactivate, children: [
-            {segment: 'downloads', component: '<quotas-files-downloads/>'},
-            {segment: 'pictures', component: '<quotas-files-pictures/>'},
-            {segment: 'documents', component: '<quotas-files-documents/>'},
-            {segment: '**', redirectTo: '/control/quotas'}]},
+const pr = new PathResolver([
+  {segment: '', component: '<index-page/>'},
+  {segment: 'control', component: '<control/>', canActivate: canActivateControl, children: [
+      {segment: 'quotas', component: '<ctrl-quotas/>', children: [
+          {segment: 'files', children: [
+              {segment: 'downloads', component: '<quotas-files-downloads/>'},
+              {segment: 'pictures', component: '<quotas-files-pictures/>'},
+              {segment: 'documents', component: '<quotas-files-documents/>', canDeactivate},
+              {segment: '**', redirectTo: '/control/quotas'}]},
           {segment: '**', redirectTo: '/control'}]},
-        {segment: ':userId', component: '<ctrl-user/>', children: [
+      {segment: ':userId', component: '<ctrl-user/>', canActivate: canActivateControlUser, children: [
           {segment: 'achievement-list', component: '<ctrl-user-achievement-list/>'},
           {segment: 'bonuses', action},
           {segment: '**', component: '<ctrl-user-unknown-page/>'}]},
-        {segment: '**', redirectTo: '/auto'}]},
-      {segment: 'auto', component: '<auto/>', children: [
-        {segment: 'to-red', customTo: {pathname: '/auto/red', search: '?ford=focus', hash: '#table'}},
-        {segment: ':color', component: '<auto-color/>'},
-        {segment: '**', redirectTo: '/'}]},
-      {segment: '**', component: '<not-found>'}
-    ]);
+      {segment: '**', redirectTo: '/auto'}]},
+  {segment: 'auto', component: '<auto/>', children: [
+      {segment: 'to-red', customTo: {pathname: '/auto/red', search: '?ford=focus', hash: '#table'}},
+      {segment: ':color', component: '<auto-color/>'},
+      {segment: '**', redirectTo: '/'}]},
+  {segment: '**', component: '<not-found>'}
+], {isDebug: true});
 // @formatter:on
 
-    let {entry, pathnameParams} = pr.resolve('/auto/toyota') as IPathResolveResult;
+function isUndefined(arr: any[]) {
+  expect(arr.every(x => x === undefined)).toBe(true);
+}
+
+function ifComponentChecks({redirectTo, customTo, action}: Entry) {
+  isUndefined([redirectTo, customTo, action]);
+}
+
+function ifRedirectToChecks({component, customTo, action}: Entry) {
+  isUndefined([component, customTo, action]);
+}
+
+function ifCustomToChecks({component, redirectTo, action}: Entry) {
+  isUndefined([component, redirectTo, action]);
+}
+
+function ifActionChecks({component, redirectTo, customTo}: Entry) {
+  isUndefined([component, redirectTo, customTo]);
+}
+
+//endregion Support
+
+describe('PathResolver, resolve', () => {
+
+  test('component', () => {
+    let {target, canActivateArr} = pr.resolve('/auto/toyota') as IPathResolveResult;
+    expect(canActivateArr.length).toBe(0);
+    let {entry, pathname, pathnameParams} = target;
     expect(entry.component).toBe('<auto-color/>');
+    expect(pathname).toBe('/auto/toyota');
     expect(pathnameParams).toEqual({'color': 'toyota'});
+    ifComponentChecks(entry);
+  });
 
-    ({entry} = pr.resolve('/auto/ford/mustang') as IPathResolveResult);
+  test('redirectTo', () => {
+    let {target, canActivateArr} = pr.resolve('/auto/ford/mustang') as IPathResolveResult;
+    expect(canActivateArr.length).toBe(0);
+    let {entry, pathname} = target;
     expect(entry.redirectTo).toBe('/');
+    expect(pathname).toBe('/auto/ford/mustang');
+    ifRedirectToChecks(entry);
+  });
 
-    ({entry} = pr.resolve('/auto/to-red') as IPathResolveResult);
+  test('customTo', () => {
+    let {target, canActivateArr} = pr.resolve('/auto/to-red') as IPathResolveResult;
+    expect(canActivateArr.length).toBe(0);
+    let {entry, pathname} = target;
     expect(entry.customTo).toEqual({pathname: '/auto/red', search: '?ford=focus', hash: '#table'});
+    expect(pathname).toBe('/auto/to-red');
+    ifCustomToChecks(entry);
+  });
 
-    ({entry, pathnameParams} = pr.resolve('/control/72/bonuses') as IPathResolveResult);
-    expect(pathnameParams).toEqual({'userId': '72'});
-    expect(entry.pathTemplate).toBe('/control/:userId/bonuses');
+  test('action', () => {
+    let {target, canActivateArr} = pr.resolve('/control/72/bonuses') as IPathResolveResult;
+    expect(canActivateArr.length).toBe(2);
+    let {entry, pathname, pathnameParams} = target;
     expect(entry.action).toBeTruthy();
+    expect(pathname).toBe('/control/72/bonuses');
+    expect(pathnameParams).toEqual({'userId': '72'});
+    ifActionChecks(entry);
+  });
 
+  test('canActivate', () => {
+    let {target, canActivateArr} = pr.resolve('/control/72/bonuses') as IPathResolveResult;
+    expect(canActivateArr.length).toBe(2);
+    let {entry, pathname, pathnameParams} = target;
+    expect(entry.action).toStrictEqual(action);
+    expect(pathname).toBe('/control/72/bonuses');
+    expect(pathnameParams).toEqual({'userId': '72'});
+    expect(canActivateArr[0].pathTemplate).toBe('/control');
+    expect(canActivateArr[0].canActivate).toStrictEqual(canActivateControl);
+    expect(canActivateArr[1].pathTemplate).toBe('/control/:userId');
+    expect(canActivateArr[1].canActivate).toStrictEqual(canActivateControlUser);
 
+    ({target, canActivateArr} = pr.resolve('/control/56') as IPathResolveResult);
+    expect(canActivateArr.length).toBe(2);
+    ({entry, pathname, pathnameParams} = target);
+    expect(entry.component).toBe('<ctrl-user/>');
+    expect(pathname).toBe('/control/56');
+    expect(pathnameParams).toEqual({'userId': '56'});
+    expect(canActivateArr[0].pathTemplate).toBe('/control');
+    expect(canActivateArr[0].canActivate).toStrictEqual(canActivateControl);
+    expect(canActivateArr[1].pathTemplate).toBe('/control/:userId');
+    expect(canActivateArr[1].canActivate).toStrictEqual(canActivateControlUser);
+  });
+
+  test('canDeactivate', () => {
+    let {target, canActivateArr} = pr.resolve('/control/quotas/files/documents') as IPathResolveResult;
+    expect(canActivateArr.length).toBe(1);
+    let {entry, pathname} = target;
+    expect(pathname).toBe('/control/quotas/files/documents');
+    expect(entry.component).toBe('<quotas-files-documents/>');
+    expect(entry.canDeactivate).toStrictEqual(canDeactivate);
+  });
+
+  test('result is Children', () => {
+    let {target, canActivateArr} = pr.resolve('/control/quotas/files') as IPathResolveResult;
+    expect(canActivateArr.length).toBe(1);
+    let {entry, pathname} = target;
+    expect(pathname).toBe('/control/quotas/files');
+    expect(entry.pathTemplate).toBe('/control/quotas/(.*)');
+    expect(entry.redirectTo).toBe('/control');
   });
 
 });

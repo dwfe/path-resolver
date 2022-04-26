@@ -1,6 +1,6 @@
 import {cloneSimple, IPathnameParams, isJustObject, isNotJustObject, isString} from '@do-while-for-each/common';
 import {match, MatchFunction} from 'path-to-regexp';
-import {INNER_WILDCARD_SEGMENT, WILDCARD_SEGMENT} from './cmmn';
+import {INNER_WILDCARD_SEGMENT, WILDCARD_SEGMENT} from '../index';
 import {ICustomTo, IEntry} from './contract'
 
 /**
@@ -50,6 +50,10 @@ export class Entry {
     if (!this.hasResult) {
       console.error('The entry must have at least one of: component, redirectTo, customTo, action or children', this.orig);
       throw new Error('The resulting field is missing. Fill one of: component, redirectTo, customTo, action or children');
+    }
+    if (Entry.isMultiResult(this.orig)) {
+      console.error('Only one of the following can be specified at a time: component, redirectTo, customTo or action', this.orig);
+      throw new Error('Only one of the following can be specified at a time: component, redirectTo, customTo or action');
     }
     this.resultIsChildren = Entry.resultIsChildren(this.orig);
 
@@ -244,6 +248,21 @@ export class Entry {
       orig.customTo === undefined &&
       orig.action === undefined
     );
+  }
+
+  static isMultiResult(orig: IEntry): boolean {
+    let count = 0;
+    if (orig.component !== undefined)
+      count++;
+    if (orig.redirectTo !== undefined)
+      count++;
+    if (orig.customTo !== undefined)
+      count++;
+    if (orig.action !== undefined)
+      count++;
+    // if (orig.children !== undefined) <-- it's been commented out,
+    //   count++;                           and it's not a mistake
+    return count > 1;
   }
 
   static of(orig: IEntry, parent?: Entry): Entry {

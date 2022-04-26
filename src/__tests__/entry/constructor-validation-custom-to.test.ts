@@ -1,5 +1,5 @@
 import {describe} from '@jest/globals';
-import {Entry} from '../../core/a/entry';
+import {Entry} from '../../core/entry';
 import {Throw} from '../util';
 
 describe('Entry.constructor, customTo incorrect use', () => {

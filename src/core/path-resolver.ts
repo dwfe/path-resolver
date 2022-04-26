@@ -1,6 +1,6 @@
 import {IPathnameParams} from '@do-while-for-each/common';
 import {Match} from 'path-to-regexp';
-import {IEntry, IPathResolveResult, IPathResolverOpt} from './contract'
+import {IEntry, IFound, IPathResolveResult, IPathResolverOpt} from './contract'
 import {Entry} from './entry'
 
 export class PathResolver {
@@ -14,10 +14,19 @@ export class PathResolver {
 
   resolve(pathname: string): IPathResolveResult | undefined {
     this.log(`resolving '${pathname}'`)
-    return this.find(pathname, this.entries)
+    const found = this.find(pathname, this.entries);
+    if (found)
+      return {
+        target: {
+          entry: found.entry.clone(),
+          pathname,
+          pathnameParams: found.match.params
+        },
+        canActivateArr: this.getCanActivateArr(found.entry).map(x => x.clone()),
+      };
   }
 
-  find(pathname: string, entries?: Entry[]): IPathResolveResult | undefined {
+  find(pathname: string, entries?: Entry[]): IFound | undefined {
     if (!entries)
       return;
 
@@ -30,15 +39,24 @@ export class PathResolver {
       // }
 
       const match: Match<IPathnameParams> = entry.transformFn(pathname);
-      this.log(`[${match ? 'v' : 'x'}] ${entry.pathTemplate}`);
+      this.log(` [${match ? 'v' : 'x'}] ${entry.pathTemplate}`);
 
       if (match && entry.hasResult && !entry.resultIsChildren) {
-        return {entry: entry.clone(), pathnameParams: match.params};
+        return {entry, match};
       }
       const found = this.find(pathname, entry.children);
       if (found)
         return found;
     }
+  }
+
+  getCanActivateArr(entry: Entry): Entry[] {
+    const result: Entry[] = [];
+    if (entry.canActivate)
+      result.push(entry);
+    if (entry.parent)
+      result.unshift(...this.getCanActivateArr(entry.parent))
+    return result;
   }
 
 

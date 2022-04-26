@@ -4,6 +4,6 @@
     "target": "ESNext",
     "noImplicitAny": false,
     "noUnusedLocals": false,
-    "noUnusedParameters": false,
+    "noUnusedParameters": false
   }
 }

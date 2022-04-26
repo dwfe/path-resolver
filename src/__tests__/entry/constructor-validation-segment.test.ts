@@ -1,7 +1,7 @@
 import {describe} from '@jest/globals';
-import {reqEntry, fillRequired, Throw} from '../util';
-import {WILDCARD_SEGMENT} from '../../core/a/cmmn';
-import {Entry} from '../../core/a/entry'
+import {fillRequired, reqEntry, Throw} from '../util';
+import {WILDCARD_SEGMENT} from '../../index';
+import {Entry} from '../../core/entry'
 
 describe('Entry.constructor, "segment" incorrect use', () => {
 
