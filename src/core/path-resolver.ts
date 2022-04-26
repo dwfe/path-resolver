@@ -24,7 +24,7 @@ export class PathResolver {
     const req: IFindReq = {
       pathname,
       segments,
-      maxLevel: segments.length - 1,
+      level: segments.length - 1,
     };
 
     this.log(`resolving '${pathname}'`);
@@ -47,19 +47,19 @@ export class PathResolver {
     for (let i = 0; i < entries.length; i++) {
       const entry = entries[i];
 
-      if (entry.isSimpleSegment && req.segments[level] !== entry.segment) {
-        this.logSkip('!= segment', entry.pathTemplate);
+      if (entry.isSimpleSegment && entry.segment !== req.segments[level]) {
+        this.logSkip('!= segment', entry);
         continue;
       }
 
-      if (level === req.maxLevel || entry.isWildcard) {
+      if (level === req.level || entry.isWildcard) {
         const match = entry.transformFn(req.pathname);
-        this.logMatch(match, entry.pathTemplate);
+        this.logMatch(match, entry);
 
         if (match && entry.hasResult && !entry.resultIsChildren)
           return {entry, match};
       } else
-        this.logSkip('no-check', entry.pathTemplate);
+        this.logSkip('no-check', entry);
 
       const found = this.find(req, level + 1, entry.children);
       if (found)
@@ -79,14 +79,14 @@ export class PathResolver {
 
 //region Support
 
-  private logSkip(reason: string, pathTemplate: string) {
+  private logSkip(reason: string, entry: Entry) {
     if (this.opt.isDebug)
-      console.log(` [x] ${pathTemplate}, ${reason}`);
+      console.log(` [x] ${entry.pathTemplate}, ${reason}`);
   }
 
-  private logMatch(match: Match<IPathnameParams>, pathTemplate: string) {
+  private logMatch(match: Match<IPathnameParams>, entry: Entry) {
     if (this.opt.isDebug)
-      console.log(` [${match ? 'v' : 'x'}] ${pathTemplate}`);
+      console.log(` [${match ? 'v' : 'x'}] ${entry.pathTemplate}`);
   }
 
   private log(data: string) {

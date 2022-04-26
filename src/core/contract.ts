@@ -39,7 +39,7 @@ export interface IPathResolverOpt {
 export interface IFindReq {
   pathname: string;
   segments: string[];
-  maxLevel: number;
+  level: number;
 }
 
 export interface IFound {
