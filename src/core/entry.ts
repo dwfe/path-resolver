@@ -29,6 +29,8 @@ export class Entry {
     return this.orig.segment;
   }
 
+  segmentStartWith: string | undefined;
+
   component?: any;
   redirectTo?: string;
   customTo?: IEntry['customTo'];
@@ -56,6 +58,7 @@ export class Entry {
       throw new Error('Only one of the following can be specified at a time: component, redirectTo, customTo or action');
     }
     this.resultIsChildren = Entry.resultIsChildren(this.orig);
+    this.segmentStartWith = this.segment[0];
 
     this.pathTemplate = Entry.normalizePathTemplate(this.orig, parent);
     this.transformFn = match<IPathnameParams>(this.pathTemplate, {decode: decodeURIComponent});
@@ -96,6 +99,17 @@ export class Entry {
       Entry.cloneOrig(this.orig),
       this.parent
     );
+  }
+
+  skip(pathname: string): boolean {
+    switch (this.segmentStartWith) {
+      case undefined:
+      case ':':
+      case '(':
+        return false; // can't check -> go inside branch
+    }
+    const checkFirst = pathname.split('/')[1];
+    return this.segment !== checkFirst;
   }
 
 

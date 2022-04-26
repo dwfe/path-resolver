@@ -49,6 +49,17 @@ describe('PathResolver, resolve', () => {
     expect(pathname).toBe('/auto/toyota');
     expect(pathnameParams).toEqual({'color': 'toyota'});
     ifComponentChecks(entry);
+
+    ({target, canActivateArr} = pr.resolve('/') as IPathResolveResult);
+    expect(canActivateArr.length).toBe(0);
+    ({entry} = target);
+    expect(entry.component).toBe('<index-page/>');
+
+    ({target, canActivateArr} = pr.resolve('/control/quotas/files/pictures') as IPathResolveResult);
+    expect(canActivateArr.length).toBe(1);
+    ({entry} = target);
+    expect(entry.component).toBe('<quotas-files-pictures/>');
+
   });
 
   test('redirectTo', () => {

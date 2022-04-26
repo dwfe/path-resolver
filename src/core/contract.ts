@@ -36,6 +36,11 @@ export interface IPathResolverOpt {
   isDebug?: boolean;
 }
 
+export interface IPattern {
+  pathname: string;
+  segments: string[];
+}
+
 export interface IPathResolveResult {
   target: {
     entry: Entry;

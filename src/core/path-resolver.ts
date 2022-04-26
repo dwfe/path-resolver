@@ -13,6 +13,13 @@ export class PathResolver {
   }
 
   resolve(pathname: string): IPathResolveResult | undefined {
+    if (!pathname.startsWith('/')) {
+      console.error('pathname must start with the character "/":', pathname);
+      throw new Error('pathname must start with the character "/"');
+    }
+    if (pathname.length > 1 && pathname.endsWith('/')) {
+      pathname = pathname.slice(0, -1); // remove the final slash
+    }
     this.log(`resolving '${pathname}'`)
     const found = this.find(pathname, this.entries);
     if (found)
@@ -33,10 +40,10 @@ export class PathResolver {
     for (let i = 0; i < entries.length; i++) {
       const entry = entries[i];
 
-      // if (skipBranch(entry.segment, pathname)) {
-      //   this.log(`[x] ${entry.segment}, skip branch`)
-      //   continue;
-      // }
+      if (entry.parent === undefined && entry.skip(pathname)) {
+        this.log(` [x] ${entry.pathTemplate}, skip branch`)
+        continue;
+      }
 
       const match: Match<IPathnameParams> = entry.transformFn(pathname);
       this.log(` [${match ? 'v' : 'x'}] ${entry.pathTemplate}`);
