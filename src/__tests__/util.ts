@@ -38,3 +38,24 @@ export function normCheck(orig: IEntry, test: Partial<Entry>[], fields: Array<ke
     }
   }
 }
+
+
+function isUndefined(arr: any[]) {
+  expect(arr.every(x => x === undefined)).toBe(true);
+}
+
+export function ifComponentChecks({redirectTo, customTo, action}: Entry) {
+  isUndefined([redirectTo, customTo, action]);
+}
+
+export function ifRedirectToChecks({component, customTo, action}: Entry) {
+  isUndefined([component, customTo, action]);
+}
+
+export function ifCustomToChecks({component, redirectTo, action}: Entry) {
+  isUndefined([component, redirectTo, action]);
+}
+
+export function ifActionChecks({component, redirectTo, customTo}: Entry) {
+  isUndefined([component, redirectTo, customTo]);
+}

@@ -1,8 +1,8 @@
 import {describe} from '@jest/globals';
 import * as console2 from 'console';
-import {IPathResolveResult} from '../../core/contract'
+import {ifActionChecks, ifComponentChecks, ifCustomToChecks, ifRedirectToChecks} from '../util';
+import {IPathResolveResult} from '../../core/contract';
 import {PathResolver} from '../../core/path-resolver';
-import {Entry} from '../../core/entry';
 
 //region Support
 
@@ -36,26 +36,6 @@ const pr = new PathResolver([
   {segment: '**', component: '<not-found>'}
 ], {isDebug: true});
 // @formatter:on
-
-function isUndefined(arr: any[]) {
-  expect(arr.every(x => x === undefined)).toBe(true);
-}
-
-function ifComponentChecks({redirectTo, customTo, action}: Entry) {
-  isUndefined([redirectTo, customTo, action]);
-}
-
-function ifRedirectToChecks({component, customTo, action}: Entry) {
-  isUndefined([component, customTo, action]);
-}
-
-function ifCustomToChecks({component, redirectTo, action}: Entry) {
-  isUndefined([component, redirectTo, action]);
-}
-
-function ifActionChecks({component, redirectTo, customTo}: Entry) {
-  isUndefined([component, redirectTo, customTo]);
-}
 
 //endregion Support
 
