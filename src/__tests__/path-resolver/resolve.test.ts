@@ -1,8 +1,8 @@
 import {describe} from '@jest/globals';
 import * as console2 from 'console';
 import {ifActionChecks, ifComponentChecks, ifCustomToChecks, ifRedirectToChecks} from '../util';
-import {IPathResolveResult} from '../../core/contract';
-import {PathResolver} from '../../core/path-resolver';
+import {IPathResolveResult} from '../../contract';
+import {PathResolver} from '../../path-resolver';
 
 //region Support
 

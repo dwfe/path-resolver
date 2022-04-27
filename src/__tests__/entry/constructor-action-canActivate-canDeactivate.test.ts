@@ -1,5 +1,5 @@
 import {describe} from '@jest/globals'
-import {IEntry} from '../../core/contract'
+import {IEntry} from '../../contract'
 import {reqEntry} from '../util'
 
 describe('Entry.constructor, action, canActivate,  normal use', () => {

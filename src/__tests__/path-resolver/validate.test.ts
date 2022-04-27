@@ -1,6 +1,6 @@
 import {describe} from '@jest/globals';
+import {PathResolver} from '../../path-resolver';
 import {Throw} from '../util';
-import {PathResolver} from '../../core/path-resolver';
 
 describe('PathResolver.validate', () => {
 

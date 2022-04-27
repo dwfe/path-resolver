@@ -1,6 +1,6 @@
 import {IPathnameParams, isJustObject, isNotJustObject, isString} from '@do-while-for-each/common';
 import {match, MatchFunction} from 'path-to-regexp';
-import {INNER_WILDCARD_SEGMENT, WILDCARD_SEGMENT} from '../index';
+import {INNER_WILDCARD_SEGMENT, WILDCARD_SEGMENT} from './cmmn';
 import {ICustomTo, IEntry} from './contract'
 
 /**
