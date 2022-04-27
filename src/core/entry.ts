@@ -1,4 +1,4 @@
-import {cloneSimple, IPathnameParams, isJustObject, isNotJustObject, isString} from '@do-while-for-each/common';
+import {IPathnameParams, isJustObject, isNotJustObject, isString} from '@do-while-for-each/common';
 import {match, MatchFunction} from 'path-to-regexp';
 import {INNER_WILDCARD_SEGMENT, WILDCARD_SEGMENT} from '../index';
 import {ICustomTo, IEntry} from './contract'
@@ -23,8 +23,11 @@ import {ICustomTo, IEntry} from './contract'
  */
 export class Entry {
 
+  hasResult: boolean;
+  resultIsOnlyChildren: boolean;
+
   pathTemplate!: string; // e.g. "/control/:user"
-  transformFn: MatchFunction<IPathnameParams>; // https://github.com/pillarjs/path-to-regexp#match
+  match: MatchFunction<IPathnameParams>; // https://github.com/pillarjs/path-to-regexp#match
   get segment(): string { // segment of the pathname, e.g.: ":user"
     return this.orig.segment;
   }
@@ -45,9 +48,6 @@ export class Entry {
   note?: any;
   name?: string;
 
-  hasResult: boolean;
-  resultIsChildren: boolean;
-
   constructor(public orig: IEntry,
               public parent?: Entry) {
     this.hasResult = Entry.hasResult(this.orig);
@@ -59,14 +59,14 @@ export class Entry {
       console.error('Only one of the following can be specified at a time: component, redirectTo, customTo or action', this.orig);
       throw new Error('Only one of the following can be specified at a time: component, redirectTo, customTo or action');
     }
-    this.resultIsChildren = Entry.resultIsChildren(this.orig);
+    this.resultIsOnlyChildren = Entry.resultIsOnlyChildren(this.orig);
+
+    this.pathTemplate = Entry.normalizePathTemplate(this.orig, parent);
+    this.match = match<IPathnameParams>(this.pathTemplate, {decode: decodeURIComponent});
 
     this.isWildcard = this.segment === WILDCARD_SEGMENT;
     this.isParam = this.segment[0] === ':';
     this.isSimpleSegment = !this.isWildcard && !this.isParam;
-
-    this.pathTemplate = Entry.normalizePathTemplate(this.orig, parent);
-    this.transformFn = match<IPathnameParams>(this.pathTemplate, {decode: decodeURIComponent});
 
     this.component = this.orig.component;
     this.redirectTo = Entry.normalizeRedirectTo(this.orig.redirectTo);
@@ -75,7 +75,7 @@ export class Entry {
 
     this.canActivate = this.orig.canActivate;
     this.canDeactivate = this.orig.canDeactivate;
-    this.note = Entry.normalizeNote(this.orig.note);
+    this.note = Entry.cloneObj(this.orig.note);
     this.name = this.orig.name;
 
     this.children = Entry.normalizeChildren(this.orig, this);
@@ -110,11 +110,11 @@ export class Entry {
 
   static cloneOrig(orig: IEntry, {skipChildren} = {skipChildren: false}): IEntry {
     const result: IEntry = {...orig};
-    result.customTo = isJustObject(orig.customTo) && {...orig.customTo} || orig.customTo;
+    result.customTo = Entry.cloneObj(orig.customTo);
     if (orig.children && !skipChildren) {
       result.children = orig.children.map(x => Entry.cloneOrig(x));
     }
-    result.note = isJustObject(orig.note) && {...orig.note} || orig.note;
+    result.note = Entry.cloneObj(orig.note);
     return result;
   }
 
@@ -209,12 +209,8 @@ export class Entry {
     return children?.map(orig => Entry.of(Entry.cloneOrig(orig), parent));
   }
 
-  static normalizeNote(note?: any) {
-    if (note === undefined)
-      return;
-    if (isNotJustObject(note))
-      return note;
-    return cloneSimple(note);
+  static cloneObj(data?: any) {
+    return isJustObject(data) && {...data} || data;
   }
 
 //endregion Normalization & Validation
@@ -245,7 +241,7 @@ export class Entry {
     );
   }
 
-  static resultIsChildren(orig: IEntry): boolean {
+  static resultIsOnlyChildren(orig: IEntry): boolean {
     if (!Entry.hasResult(orig))
       return false;
     return (

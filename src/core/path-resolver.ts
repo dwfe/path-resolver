@@ -17,17 +17,15 @@ export class PathResolver {
       console.error('pathname must start with the character "/":', pathname);
       throw new Error('pathname must start with the character "/"');
     }
-    if (pathname.length > 1 && pathname.endsWith('/')) {
-      pathname = pathname.slice(0, -1); // remove the final slash
-    }
-    const segments = pathname.split('/').slice(1);
+    if (pathname.length > 1 && pathname.endsWith('/'))
+      pathname = pathname.slice(0, -1); // remove the slash from the end
+    const segments = pathname.split('/').slice(1); // "/hello/world" -> ["hello","world"]
     const req: IFindReq = {
       pathname,
       segments,
       level: segments.length - 1,
     };
-
-    this.log(`resolving '${pathname}'`);
+    this.log(`resolving "${pathname}"`);
     const found = this.find(req, 0, this.entries);
     if (found)
       return {
@@ -51,17 +49,24 @@ export class PathResolver {
         this.logSkip('!= segment', entry);
         continue;
       }
-
       if (level === req.level || entry.isWildcard) {
-        const match = entry.transformFn(req.pathname);
+        const match = entry.match(req.pathname);
         this.logMatch(match, entry);
-
-        if (match && entry.hasResult && !entry.resultIsChildren)
-          return {entry, match};
+        if (match) {
+          if (entry.resultIsOnlyChildren)
+            this.logSkip('result-is-only-children', entry);
+          else
+            return {entry, match};
+        }
       } else
-        this.logSkip('no-check', entry);
+        this.logSkip('skip-check', entry);
 
-      const found = this.find(req, level + 1, entry.children);
+      const nextLevel = level + 1;
+      if (nextLevel > req.level) {
+        this.logSkip('skip-children', entry);
+        continue;
+      }
+      const found = this.find(req, nextLevel, entry.children);
       if (found)
         return found;
     }

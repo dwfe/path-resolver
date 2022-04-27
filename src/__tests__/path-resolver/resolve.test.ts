@@ -28,7 +28,7 @@ const pr = new PathResolver([
           {segment: 'achievement-list', component: '<ctrl-user-achievement-list/>'},
           {segment: 'bonuses', action},
           {segment: '**', component: '<ctrl-user-unknown-page/>'}]},
-      {segment: '**', redirectTo: '/auto'}]},
+      {segment: '**', redirectTo: '/auto'}]}, // unattainable entry!
   {segment: 'auto', component: '<auto/>', children: [
       {segment: 'to-red', customTo: {pathname: '/auto/red', search: '?ford=focus', hash: '#table'}},
       {segment: ':color', component: '<auto-color/>'},
@@ -49,6 +49,24 @@ describe('PathResolver, resolve', () => {
     expect(entry.component).toBe('<index-page/>');
     ifComponentChecks(entry);
 
+    ({target, canActivateArr} = pr.resolve('/control/') as IPathResolveResult);
+    expect(canActivateArr.length).toBe(1);
+    ({entry} = target);
+    expect(entry.component).toBe('<control/>');
+    ifComponentChecks(entry);
+
+    ({target, canActivateArr} = pr.resolve('/control/quotas') as IPathResolveResult);
+    expect(canActivateArr.length).toBe(1);
+    ({entry} = target);
+    expect(entry.component).toBe('<ctrl-quotas/>');
+    ifComponentChecks(entry);
+
+    ({target, canActivateArr} = pr.resolve('/control/quotas/files/downloads') as IPathResolveResult);
+    expect(canActivateArr.length).toBe(1);
+    ({entry} = target);
+    expect(entry.component).toBe('<quotas-files-downloads/>');
+    ifComponentChecks(entry);
+
     ({target, canActivateArr} = pr.resolve('/control/quotas/files/pictures') as IPathResolveResult);
     expect(canActivateArr.length).toBe(1);
     ({entry} = target);
@@ -67,6 +85,12 @@ describe('PathResolver, resolve', () => {
     expect(entry.component).toBe('<ctrl-user-unknown-page/>');
     ifComponentChecks(entry);
 
+    ({target, canActivateArr} = pr.resolve('/auto/') as IPathResolveResult);
+    expect(canActivateArr.length).toBe(0);
+    ({entry} = target);
+    expect(entry.component).toBe('<auto/>');
+    ifComponentChecks(entry);
+
     ({target, canActivateArr} = pr.resolve('/auto/toyota') as IPathResolveResult);
     expect(canActivateArr.length).toBe(0);
     ({entry, pathname, pathnameParams} = target);
@@ -75,7 +99,7 @@ describe('PathResolver, resolve', () => {
     expect(pathnameParams).toEqual({'color': 'toyota'});
     ifComponentChecks(entry);
 
-    ({target, canActivateArr} = pr.resolve('/hY7654dFo') as IPathResolveResult);
+    ({target, canActivateArr} = pr.resolve('/zY7654dFo') as IPathResolveResult);
     expect(canActivateArr.length).toBe(0);
     ({entry} = target);
     expect(entry.component).toBe('<slide/>');
@@ -89,9 +113,33 @@ describe('PathResolver, resolve', () => {
   });
 
   test('redirectTo', () => {
-    let {target, canActivateArr} = pr.resolve('/auto/ford/mustang') as IPathResolveResult;
-    expect(canActivateArr.length).toBe(0);
+    let {target, canActivateArr} = pr.resolve('/control/quotas/files') as IPathResolveResult;
+    expect(canActivateArr.length).toBe(1);
     let {entry, pathname} = target;
+    expect(entry.redirectTo).toBe('/control');
+    ifRedirectToChecks(entry);
+
+    ({target, canActivateArr} = pr.resolve('/control/quotas/files/unknown') as IPathResolveResult);
+    expect(canActivateArr.length).toBe(1);
+    ({entry, pathname} = target);
+    expect(entry.redirectTo).toBe('/control/quotas');
+    ifRedirectToChecks(entry);
+
+    ({target, canActivateArr} = pr.resolve('/control/quotas/unknown') as IPathResolveResult);
+    expect(canActivateArr.length).toBe(1);
+    ({entry, pathname} = target);
+    expect(entry.redirectTo).toBe('/control');
+    ifRedirectToChecks(entry);
+
+    // ({target, canActivateArr} = pr.resolve('/control/unknown') as IPathResolveResult);
+    // expect(canActivateArr.length).toBe(1);
+    // ({entry, pathname} = target);
+    // expect(entry.redirectTo).toBe('/auto');
+    // ifRedirectToChecks(entry);
+
+    ({target, canActivateArr} = pr.resolve('/auto/ford/mustang') as IPathResolveResult);
+    expect(canActivateArr.length).toBe(0);
+    ({entry, pathname} = target);
     expect(entry.redirectTo).toBe('/');
     expect(pathname).toBe('/auto/ford/mustang');
     ifRedirectToChecks(entry);
@@ -117,23 +165,23 @@ describe('PathResolver, resolve', () => {
   });
 
   test('canActivate', () => {
-    let {target, canActivateArr} = pr.resolve('/control/72/bonuses') as IPathResolveResult;
+    let {target, canActivateArr} = pr.resolve('/control/56') as IPathResolveResult;
     expect(canActivateArr.length).toBe(2);
     let {entry, pathname, pathnameParams} = target;
-    expect(entry.action).toStrictEqual(action);
-    expect(pathname).toBe('/control/72/bonuses');
-    expect(pathnameParams).toEqual({'userId': '72'});
+    expect(entry.component).toBe('<ctrl-user/>');
+    expect(pathname).toBe('/control/56');
+    expect(pathnameParams).toEqual({'userId': '56'});
     expect(canActivateArr[0].pathTemplate).toBe('/control');
     expect(canActivateArr[0].canActivate).toStrictEqual(canActivateControl);
     expect(canActivateArr[1].pathTemplate).toBe('/control/:userId');
     expect(canActivateArr[1].canActivate).toStrictEqual(canActivateControlUser);
 
-    ({target, canActivateArr} = pr.resolve('/control/56') as IPathResolveResult);
+    ({target, canActivateArr} = pr.resolve('/control/72/bonuses') as IPathResolveResult);
     expect(canActivateArr.length).toBe(2);
     ({entry, pathname, pathnameParams} = target);
-    expect(entry.component).toBe('<ctrl-user/>');
-    expect(pathname).toBe('/control/56');
-    expect(pathnameParams).toEqual({'userId': '56'});
+    expect(entry.action).toStrictEqual(action);
+    expect(pathname).toBe('/control/72/bonuses');
+    expect(pathnameParams).toEqual({'userId': '72'});
     expect(canActivateArr[0].pathTemplate).toBe('/control');
     expect(canActivateArr[0].canActivate).toStrictEqual(canActivateControl);
     expect(canActivateArr[1].pathTemplate).toBe('/control/:userId');
@@ -147,15 +195,6 @@ describe('PathResolver, resolve', () => {
     expect(pathname).toBe('/control/quotas/files/documents');
     expect(entry.component).toBe('<quotas-files-documents/>');
     expect(entry.canDeactivate).toStrictEqual(canDeactivate);
-  });
-
-  test('result is Children', () => {
-    let {target, canActivateArr} = pr.resolve('/control/quotas/files') as IPathResolveResult;
-    expect(canActivateArr.length).toBe(1);
-    let {entry, pathname} = target;
-    expect(pathname).toBe('/control/quotas/files');
-    expect(entry.pathTemplate).toBe('/control/quotas/(.*)');
-    expect(entry.redirectTo).toBe('/control');
   });
 
 });
