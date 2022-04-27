@@ -22,18 +22,17 @@
     "README.md"
   ],
   "dependencies": {
-    "path-to-regexp": "^6.2.0"
+    "path-to-regexp": "6.2.0"
   },
   "devDependencies": {
     "@do-while-for-each/tsconfig": "^1.0.3",
     "@do-while-for-each/common": "^1.2.13",
     "@types/jest": "27.x.x",
     "jest": "27.x.x",
-    "ts-jest": "27.x.x",
-    "history": "5.3.0"
+    "ts-jest": "27.x.x"
   },
   "scripts": {
-    "clean": "dwfeFs cleanDir . --noConfirm --fileNames=\"dist;node_modules;package-lock.json\"",
+    "clean": "dwfeFs cleanDir . --fileNames=\"dist;node_modules;package-lock.json\"",
     "build": "dwfeFs rmForce dist --noConfirm && tsc -b src/tsconfig.json",
     "types": "tsc -b config/tsconfig.types.json",
     "test": "jest --config=src/__tests__/jest.config.js",
