@@ -28,7 +28,7 @@ export class Entry {
 
   pathTemplate!: string; // e.g. "/control/:user"
   match: MatchFunction<IPathnameParams>; // https://github.com/pillarjs/path-to-regexp#match
-  get segment(): string { // segment of the pathname, e.g.: ":user"
+  get segment(): string { // this segment of the pathTemplate, e.g.: ":user"
     return this.orig.segment;
   }
 
