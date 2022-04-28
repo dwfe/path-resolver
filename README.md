@@ -63,12 +63,10 @@ class PathResolver {
 }
 
 export interface IPathResolveResult {
-  target: {
-    entry: Entry;
-    pathname: string;
-    pathnameParams: IPathnameParams;
-  },
-  canActivateArr: Entry[];
+  entry: Entry;
+  pathname: string;
+  pathnameParams: IPathnameParams;
+  canActivateEntries: Entry[]; // in order from root to down
 }
 ```
 

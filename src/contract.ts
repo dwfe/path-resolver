@@ -1,5 +1,4 @@
 import {IPath, IPathnameParams} from '@do-while-for-each/common'
-import {MatchResult} from 'path-to-regexp';
 import {Entry} from './entry';
 
 //region Entry
@@ -44,16 +43,14 @@ export interface IFindReq {
 
 export interface IFound {
   entry: Entry;
-  match: MatchResult<IPathnameParams>;
+  pathnameParams: IPathnameParams;
 }
 
 export interface IPathResolveResult {
-  target: {
-    entry: Entry;
-    pathname: string;
-    pathnameParams: IPathnameParams;
-  },
-  canActivateArr: Entry[];
+  entry: Entry;
+  pathname: string;
+  pathnameParams: IPathnameParams;
+  canActivateEntries: Entry[]; // in order from root to down
 }
 
 //endregion PathResolver

@@ -29,12 +29,10 @@ export class PathResolver {
     const found = this.find(req, 0, this.entries);
     if (found)
       return {
-        target: {
-          entry: found.entry.clone(),
-          pathname,
-          pathnameParams: found.match.params
-        },
-        canActivateArr: this.getCanActivateArr(found.entry).map(x => x.clone()),
+        entry: found.entry.clone(),
+        pathname,
+        pathnameParams: found.pathnameParams,
+        canActivateEntries: this.getCanActivateEntries(found.entry).map(x => x.clone()),
       };
   }
 
@@ -56,7 +54,7 @@ export class PathResolver {
           if (entry.resultIsOnlyChildren)
             this.logSkip('result-is-only-children', entry);
           else
-            return {entry, match};
+            return {entry, pathnameParams: match.params};
         }
       } else
         this.logSkip('skip-check', entry);
@@ -72,12 +70,12 @@ export class PathResolver {
     }
   }
 
-  getCanActivateArr(entry: Entry): Entry[] {
+  getCanActivateEntries(entry: Entry): Entry[] {
     const result: Entry[] = [];
     if (entry.canActivate)
       result.push(entry);
     if (entry.parent)
-      result.unshift(...this.getCanActivateArr(entry.parent))
+      result.unshift(...this.getCanActivateEntries(entry.parent))
     return result;
   }
 
