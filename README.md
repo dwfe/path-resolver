@@ -191,8 +191,8 @@ But it can also be any primitive or function:
 
 ```
 {segment: '', component: 123}
-{segment: '/ctrl', component: null}
-{segment: '/auto', component: () => console.log('hi')}
+{segment: 'ctrl', component: null}
+{segment: 'auto', component: () => console.log('hi')}
 ```
 
 the main thing is that the code that received such a result could process it correctly.
