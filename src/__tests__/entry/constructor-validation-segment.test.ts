@@ -1,5 +1,6 @@
+import {Throw} from '@do-while-for-each/test';
 import {describe} from '@jest/globals';
-import {fillRequired, reqEntry, Throw} from '../util';
+import {fillRequired, reqEntry} from '../util';
 import {WILDCARD_SEGMENT} from '../../cmmn';
 import {Entry} from '../../entry'
 

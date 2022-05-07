@@ -33,19 +33,15 @@
   },
   "devDependencies": {
     "@do-while-for-each/tsconfig": "^1.0.3",
-    "@do-while-for-each/common": "^1.2.14",
-    "@types/jest": "27.x.x",
-    "jest": "27.x.x",
-    "ts-jest": "27.x.x"
+    "@do-while-for-each/test": "^1.0.1",
+    "@do-while-for-each/common": "^1.2.14"
   },
   "scripts": {
     "clean": "dwfeFs cleanDir . --fileNames=\"dist;node_modules;package-lock.json\"",
     "build": "dwfeFs rmForce dist --noConfirm && tsc -b src/tsconfig.json",
-    "types": "tsc -b config/tsconfig.types.json",
     "test": "jest --config=src/__tests__/jest.config.js",
-    "build_types": "npm run build && npm run types",
-    "build_types_test": "npm run build_types && npm run test",
-    "version": "npm run build_types_test",
+    "build_test": "npm run build && npm run test",
+    "version": "npm run build_test",
     "postversion": "git push",
     "deploy": "npm version patch && npm publish"
   },

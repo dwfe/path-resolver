@@ -2,21 +2,6 @@ import {expect} from '@jest/globals'
 import {IEntry} from '../contract'
 import {Entry} from '../entry';
 
-export function Throw(fn: Function, message: string) {
-  try {
-    fn();
-  } catch (err) {
-    expect(err).toBeInstanceOf(Error);
-    expect(err).toHaveProperty('message', message);
-    return;
-  }
-  expect('unreachable code section').toBe('but it came to this anyway');
-}
-
-export function noThrow(fn: Function) {
-  expect(fn).not.toThrow();
-}
-
 export function fillRequired(orig: IEntry): IEntry {
   if (!Entry.hasResult(orig))
     orig.component = 'component';

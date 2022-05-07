@@ -1,6 +1,6 @@
+import {Throw} from '@do-while-for-each/test';
 import {describe} from '@jest/globals';
 import {Entry} from '../../entry';
-import {Throw} from '../util';
 
 describe('Entry.constructor, redirectTo incorrect use', () => {
 

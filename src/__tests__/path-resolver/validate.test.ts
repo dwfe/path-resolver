@@ -1,6 +1,6 @@
+import {Throw} from '@do-while-for-each/test';
 import {describe} from '@jest/globals';
 import {PathResolver} from '../../path-resolver';
-import {Throw} from '../util';
 
 describe('PathResolver.validate', () => {
 
