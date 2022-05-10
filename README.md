@@ -90,7 +90,7 @@ So the `Entry` is an instruction on what to do when matching for this segment of
 
 A segment is part of a pathname. For example, an entry of the form:
 
-```
+```typescript
 import {Entry} from '@do-while-for-each/path-resolver';
 
 Entry.of({
