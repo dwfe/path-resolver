@@ -29,12 +29,12 @@
     "README.md"
   ],
   "dependencies": {
-    "path-to-regexp": "6.2.0"
+    "path-to-regexp": "6.2.0",
+    "@do-while-for-each/common": "2.x.x"
   },
   "devDependencies": {
     "@do-while-for-each/tsconfig": "1.x.x",
-    "@do-while-for-each/test": "1.x.x",
-    "@do-while-for-each/common": "1.x.x"
+    "@do-while-for-each/test": "1.x.x"
   },
   "scripts": {
     "clean": "dwfeFs cleanDir . --fileNames=\"dist;node_modules;package-lock.json\"",
@@ -42,8 +42,8 @@
     "test": "jest --config=src/__tests__/jest.config.js",
     "build_test": "npm run build && npm run test",
     "version": "npm run build_test",
-    "postversion": "git push",
-    "deploy": "npm version patch && npm publish"
+    "deploy": "npm version patch && npm publish",
+    "tgz": "npm run build && npm pack"
   },
   "publishConfig": {
     "access": "public"
